@@ -1,6 +1,6 @@
 # Youtube Video Downloader
 
-- This is a HTMX-golang project runs at port `http://localhost:12344/`
+- This is a **HTMX-golang** project runs at port `http://localhost:12344/`
 - This service requires ffmpeg library to be installed, please install ffmpeg first. Otherwise you will be getting lots of error for download every-time
 
 Steps to run the project
@@ -19,36 +19,36 @@ Steps to run the project
   - Download videos in the selected quality using the YouTube Data API
 
 - [ ] Audio Extraction:
-    - Provide an option to extract the audio from videos
-    - Use a video editing library to extract the audio and save it as a separate file
+  - Provide an option to extract the audio from videos
+  - Use a video editing library to extract the audio and save it as a separate file
 
 - [ ] Subtitles Download:
-    - Download and display subtitles for videos
-    - Allow users to download subtitles in various formats (e.g., SRT, VTT)
+  - Download and display subtitles for videos
+  - Allow users to download subtitles in various formats (e.g., SRT, VTT)
 
 - [ ] Progress Tracking:
-    - Display a progress bar to indicate the download progress
-    - Update the progress bar in real-time using JavaScript
+  - Display a progress bar to indicate the download progress
+  - Update the progress bar in real-time using JavaScript
 
 - [ ] Error Handling:
-    - Handle errors gracefully and provide informative messages to users
-    - Log errors for debugging purposes
+  - Handle errors gracefully and provide informative messages to users
+  - Log errors for debugging purposes
 
 - [ ] User Interface Enhancements:
-    - Use HTML5 audio and video tags to embed the downloaded video and audio files
-    - Add a search bar to allow users to search for videos
+  - Use HTML5 audio and video tags to embed the downloaded video and audio files
+  - Add a search bar to allow users to search for videos
 
 - [ ] Playlist Download:
-    - Allow users to download entire playlists
-    - Use the YouTube Data API to retrieve the list of videos in the playlist
+  - Allow users to download entire playlists
+  - Use the YouTube Data API to retrieve the list of videos in the playlist
 
 - [ ] Video Encryption:
-    - Encrypt downloaded videos using a secure encryption algorithm
-    - This can protect videos from unauthorized access
+  - Encrypt downloaded videos using a secure encryption algorithm
+  - This can protect videos from unauthorized access
 
 - [ ] Database Storage:
-    - Store downloaded videos and metadata in a database
-    - This can allow users to manage their downloaded videos and search for them later
+  - Store downloaded videos and metadata in a database
+  - This can allow users to manage their downloaded videos and search for them later
 
 ### Additional Features
 
