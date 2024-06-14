@@ -2,7 +2,6 @@ package handler
 
 import (
 	"downloader/models"
-	"downloader/service"
 	"fmt"
 	"net/http"
 
@@ -11,12 +10,12 @@ import (
 
 // Handler type contains service type for dependency injection.
 type Handler struct {
-	service *service.Service
+	servicer Servicer
 }
 
 // New to init the handler.
-func New(s *service.Service) *Handler {
-	return &Handler{service: s}
+func New(s Servicer) *Handler {
+	return &Handler{servicer: s}
 }
 
 // Page render the root index.html page.
@@ -27,7 +26,7 @@ func (h *Handler) Page(c echo.Context) error {
 // Status returns the download status of a video
 func (h *Handler) Status(c echo.Context) error {
 	vID := c.QueryParam("vid")
-	status := h.service.GetStatus(vID)
+	status := h.servicer.GetStatus(vID)
 
 	return c.String(http.StatusOK, status)
 }
@@ -39,7 +38,7 @@ func (h *Handler) GetInfo(c echo.Context) error {
 		return c.Render(http.StatusOK, "error", map[string]string{"error": "url is empty"})
 	}
 
-	data, err := h.service.GetInfo(url)
+	data, err := h.servicer.GetInfo(url)
 	if err != nil {
 		return c.Render(http.StatusOK, "error", map[string]string{"error": err.Error()})
 	}
@@ -60,7 +59,7 @@ func (h *Handler) Download(c echo.Context) error {
 	qual := c.Param("quality")
 	id := c.FormValue("id")
 
-	if err := h.service.DownloadVideo(c.Request().Context(), id, qual); err != nil {
+	if err := h.servicer.DownloadVideo(c.Request().Context(), id, qual); err != nil {
 		return c.String(http.StatusBadRequest, "Error h.Download: "+err.Error())
 	}
 
@@ -72,7 +71,7 @@ func (h *Handler) Download(c echo.Context) error {
 
 func (h *Handler) DownloadInfo(c echo.Context) error {
 	vidID := c.QueryParam("id")
-	data, err := h.service.DownloadInfo(vidID)
+	data, err := h.servicer.DownloadInfo(vidID)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
