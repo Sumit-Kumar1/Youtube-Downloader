@@ -21,7 +21,10 @@ go.work.sum
 # env file
 .env
 
-#editor specifics
+#editor specific directories
 .idea/
 .vscode/
 .visual-studio/
+
+# air specific directories
+/tmp
