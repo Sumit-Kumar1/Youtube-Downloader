@@ -20,20 +20,23 @@ import (
 )
 
 func main() {
-	// profiling things
-	f, err := os.Create("cpu.prof")
+	//profiling
+	cpuProfFile, err := os.Create("cpu.prof")
 	if err != nil {
 		fmt.Println("not able to create a profiling file")
 		return
 	}
 
-	err = pprof.StartCPUProfile(f)
+	err = pprof.StartCPUProfile(cpuProfFile)
 	if err != nil {
 		fmt.Println("not able to start profiling")
 		return
 	}
 
-	defer pprof.StopCPUProfile()
+	defer func() {
+		pprof.StopCPUProfile()
+		cpuProfFile.Close()
+	}()
 
 	e := echo.New()
 	t := models.NewTemplate("html")
