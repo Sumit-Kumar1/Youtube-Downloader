@@ -60,7 +60,7 @@ func main() {
 
 func initServices() *handler.Handler {
 	c := &yt.Client{MaxRoutines: 8, ChunkSize: yt.Size10Mb}
-	d := &dlr.Downloader{OutputDir: "vid"}
+	d := &dlr.Downloader{OutputDir: "Downloads"}
 	s := service.New(c, d)
 
 	return handler.New(s)
