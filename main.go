@@ -72,7 +72,7 @@ func addMiddleWares(e *echo.Echo) {
 	e.Use(echoprometheus.NewMiddleware("youtube_downloader"))
 	e.Pre(middleware.RemoveTrailingSlash())
 	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(
-		rate.Limit(20),
+		rate.Limit(10),
 	)))
 	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
 		Skipper:      middleware.DefaultSkipper,
