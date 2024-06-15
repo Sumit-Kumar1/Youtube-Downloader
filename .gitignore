@@ -13,6 +13,7 @@
 
 # Dependency directories
 vendor/
+Downloads/
 
 # Go workspace file
 go.work
@@ -25,6 +26,9 @@ go.work.sum
 .idea/
 .vscode/
 .visual-studio/
+
+#profiling specific
+*.prof
 
 # air specific directories
 /tmp
