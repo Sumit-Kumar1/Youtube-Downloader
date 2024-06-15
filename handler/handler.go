@@ -56,11 +56,21 @@ func (h *Handler) GetInfo(c echo.Context) error {
 
 // Download start download process based on quality and videoID
 func (h *Handler) Download(c echo.Context) error {
-	qual := c.Param("quality")
+	qual := c.FormValue("quality")
 	id := c.FormValue("id")
+	audioOnly := c.FormValue("audioOnly")
 
-	if err := h.servicer.DownloadVideo(c.Request().Context(), id, qual); err != nil {
-		return c.String(http.StatusBadRequest, "Error h.Download: "+err.Error())
+	fmt.Println("Audio only: ", audioOnly)
+
+	switch audioOnly {
+	case "":
+		if err := h.servicer.DownloadVideo(c.Request().Context(), id, qual); err != nil {
+			return c.String(http.StatusBadRequest, "Error h.DownloadVideo: "+err.Error())
+		}
+	case "true":
+		if err := h.servicer.DownloadAudio(c.Request().Context(), id); err != nil {
+			return c.String(http.StatusBadRequest, "Error h.DownloadAudio: "+err.Error())
+		}
 	}
 
 	css := "text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
