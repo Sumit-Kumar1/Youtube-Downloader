@@ -3,6 +3,7 @@ module downloader
 go 1.22.2
 
 require (
+	github.com/golang/mock v1.6.0
 	github.com/kkdai/youtube/v2 v2.10.1
 	github.com/labstack/echo-contrib v0.17.1
 	github.com/labstack/echo/v4 v4.12.0
