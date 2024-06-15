@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func newTestResources(t *testing.T) *Service {
+func newTestResources() *Service {
 	c := &yt.Client{MaxRoutines: 8, ChunkSize: yt.Size10Mb}
 	d := &dlr.Downloader{OutputDir: "Downloads"}
 	s := New(c, d)
@@ -18,8 +18,8 @@ func newTestResources(t *testing.T) *Service {
 	return s
 }
 
-func TestService_GetStatus(t *testing.T) {
-	s := newTestResources(t)
+func TestServiceGetStatus(t *testing.T) {
+	s := newTestResources()
 	s.Status = map[string]string{"abcd": "started", "123": "not-started", "000": "downloaded"}
 	tests := []struct {
 		name    string
@@ -38,8 +38,8 @@ func TestService_GetStatus(t *testing.T) {
 	}
 }
 
-func TestService_GetInfo(t *testing.T) {
-	s := newTestResources(t)
+func TestServiceGetInfo(t *testing.T) {
+	s := newTestResources()
 	tests := []struct {
 		name    string
 		url     string
