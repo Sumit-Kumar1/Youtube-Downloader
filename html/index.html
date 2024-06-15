@@ -49,11 +49,11 @@ ear
       <p class='text-xl font-bold'>Title: {{.Title}}</p>
       <p>Author Name: <span class='text-green-300'>{{.Author}}</span></p>
       <p>Duration: <span class='text-green-300'>{{.Duration}}<span></p>
-        <div>
-          <button hx-get="/info?id={{.VideoID}}" hx-swap="outerHTML"
+      <div>
+        <button hx-get="/info?id={{.VideoID}}" hx-swap="outerHTML"
           class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
           Get Download Info</button>
-        </div>
+      </div>
     </div>
   </div>
   {{ end }}
@@ -70,19 +70,23 @@ ear
     <p class='text-xl font-bold'>Title: {{.Title}}</p>
     <p>Author Name: <span class='text-green-300'>{{.Author}}</span></p>
     <p>Duration: <span class='text-green-300'>{{.Duration}}<span></p>
-      <div>
-        <form hx-post='/download?id={{.VideoID}}' class='p-3 rounded-md gap-3 flex gap-3'>
-          <select name='quality' id='qual' class='border rounded-md text-black'>
-            {{range $val := .VidQuality}}
-            <option value="{{$val}}">{{$val}}</option>
-            {{end}}
-          </select>
-          <button type='submit'
-            class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-            Download
-          </button>
-        </form>
-      </div>
+    <div>
+      <form hx-post='/download?id={{.VideoID}}' class='p-3 rounded-md gap-3 flex gap-3'>
+        <select name='quality' id='qual' class='border rounded-md text-black'>
+          {{range $val := .VidQuality}}
+          <option value="{{$val}}">{{$val}}</option>
+          {{end}}
+        </select>
+        <div>
+          <input type='radio' name="audioOnly" value="true" id="audioOnly" />
+          <label for="audioOnly">Audio Only</label>
+        </div>
+        <button type='submit'
+          class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+          Download
+        </button>
+      </form>
+    </div>
   </div>
 </div>
 {{end}}
@@ -97,12 +101,12 @@ ear
 
 {{block "vidInf" .}}
 <img src="{{.Thumbnail.Src}}" width="{{.Thumbnail.Width}}" height="{{.Thumbnail.Height}}" alt="vid Thumbnail"
-    class="h-auto max-w-sm rounded-lg shadow-none transition-shadow duration-300 ease-in-out hover:shadow-lg hover:shadow-black/30">
-  <div class="flex flex-col justify-center">
-    <p class='text-xl font-bold'>Title: {{.Title}}</p>
-    <p>Author Name: <span class='text-green-300'>{{.Author}}</span></p>
-    <p>Duration: <span class='text-green-300'>{{.Duration}}<span></p>
-  </div>
+  class="h-auto max-w-sm rounded-lg shadow-none transition-shadow duration-300 ease-in-out hover:shadow-lg hover:shadow-black/30">
+<div class="flex flex-col justify-center">
+  <p class='text-xl font-bold'>Title: {{.Title}}</p>
+  <p>Author Name: <span class='text-green-300'>{{.Author}}</span></p>
+  <p>Duration: <span class='text-green-300'>{{.Duration}}<span></p>
+</div>
 {{end}}
 
 {{block "downloadInfo" .}}
