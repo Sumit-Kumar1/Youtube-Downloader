@@ -1,4 +1,4 @@
-# Youtube Video Downloader
+# Youtube Video Downloader (in development)
 
 - This is a **HTMX-golang** project runs at port `http://localhost:12344/`
 - This service requires ffmpeg library to be installed, please install ffmpeg first. Otherwise you will be getting lots of error for download every-time
