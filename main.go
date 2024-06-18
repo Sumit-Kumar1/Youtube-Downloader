@@ -44,6 +44,12 @@ func main() {
 
 	h := initServices()
 
+	err := os.Mkdir("Downloads", 0o755)
+	if err != nil && err.Error() != "mkdir Downloads: file exists" {
+		e.Logger.Errorf("Error while creating folder: %s", err.Error())
+		return
+	}
+
 	addMiddleWares(e)
 
 	// routes
