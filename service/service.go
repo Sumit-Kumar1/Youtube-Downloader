@@ -148,6 +148,7 @@ func (s *Service) getVideoInfo(url string) (*models.VideoData, error) {
 
 	return &data, nil
 }
+
 func (s *Service) downloadAudio(vid *youtube.Video) error {
 	ctx := context.Background()
 	outFile, err := os.Create("./Downloads/" + vid.Title + ".m4a")
@@ -165,6 +166,10 @@ func (s *Service) downloadAudio(vid *youtube.Video) error {
 
 	_, err = io.Copy(outFile, stream)
 	if err != nil {
+		return err
+	}
+
+	if err := outFile.Sync(); err != nil {
 		return err
 	}
 
