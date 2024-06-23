@@ -6,7 +6,7 @@ package handler
 
 import (
 	context "context"
-	models "downloader/models"
+	models "ytdl_http/models"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"

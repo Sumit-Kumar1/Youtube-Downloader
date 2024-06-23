@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"downloader/models"
 	"fmt"
 	"net/http"
+	"ytdl_http/models"
 
 	"github.com/labstack/echo/v4"
 )

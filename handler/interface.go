@@ -2,7 +2,7 @@ package handler
 
 import (
 	"context"
-	"downloader/models"
+	"ytdl_http/models"
 )
 
 type Servicer interface {

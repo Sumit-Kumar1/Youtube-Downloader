@@ -2,9 +2,9 @@ package service
 
 import (
 	"context"
-	"downloader/models"
 	"io"
 	"os"
+	"ytdl_http/models"
 
 	"github.com/kkdai/youtube/v2"
 	yt "github.com/kkdai/youtube/v2"

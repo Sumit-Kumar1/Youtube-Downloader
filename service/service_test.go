@@ -1,9 +1,9 @@
 package service
 
 import (
-	"downloader/models"
 	"errors"
 	"testing"
+	"ytdl_http/models"
 
 	yt "github.com/kkdai/youtube/v2"
 	dlr "github.com/kkdai/youtube/v2/downloader"

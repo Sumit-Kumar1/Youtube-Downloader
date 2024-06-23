@@ -1,8 +1,8 @@
 package handler
 
 import (
-	"downloader/models"
 	"testing"
+	"ytdl_http/models"
 
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo/v4"
