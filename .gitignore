@@ -33,3 +33,4 @@ go.work.sum
 
 # air specific directories
 /tmp
+.air.toml
