@@ -1,4 +1,3 @@
-ear
 {{define "index" }}
 <!DOCTYPE html>
 <html lang="en">
@@ -13,35 +12,37 @@ ear
 </head>
 <script defer src="https://cdn.tailwindcss.com"></script>
 
-<body class="bg-gradient-to-r from-amber-500 to-pink-500">
+<body class="bg-[#1d1d1d]">
   <h1 class="text-5xl text-white m-3 text-center">
     Youtube Video Downloader
   </h1>
-  {{template "infoForm" .}}
+
+  <div class="flex flex-col text-white rounded-xl px-3 py-4">
+    <form hx-target="#dContainer" hx-swap="innerHTML" hx-post="/getInfo" class="flex gap-3">
+      <input type="url" name="URL" id="URL" placeholder="Enter video URL here"
+        class="p-2.5 bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
+      <button type="submit"
+        class="flex-none w-auto bg-[#1d1d1d] border border-[#2272FF] rounded-xl hover:bg-blue-700 text-[#2272FF] hover:text-white font-bold px-3 py-2">
+        Get Info
+      </button>
+      <a href="/player"
+    class="bg-[#1d1d1d] border border-[#2272FF] rounded-xl p-3 hover:bg-blue-700 text-[#2272FF] hover:text-white font-bold">
+    Player</a>
+    </form>
+  </div>
+  
+
   <div id="dContainer"
-    class="w-full p-4 bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700">
+    class="w-full p-4 bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700 hover:bg-transparent">
   </div>
 </body>
 
 </html>
 {{ end }}
 
-{{block "infoForm" .}}
-<div class="flex flex-col text-white rounded-xl px-3 py-4">
-  <form hx-target="#dContainer" hx-swap="innerHTML" hx-post="/getInfo" class="flex gap-3">
-    <input type="url" name="URL" id="URL" placeholder="Enter video URL here"
-      class="border-2 rounded border-green-500 p-2 text-black w-4/5" />
-    <button type="submit"
-      class="w-1/5 text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
-      Get Info
-    </button>
-  </form>
-</div>
-{{ end }}
-
-{{block "playlistInfo" .}}
+{{ block "playlistInfo" . }}
 <div class='flex flex-col gap-3 p-5 text-white'>
-  {{range .Data}}
+  {{ range .Data }}
   <div class="flex gap-5">
     <img src="{{.Thumbnail.Src}}" width="{{.Thumbnail.Width}}" height="{{.Thumbnail.Height}}" alt="vid Thumbnail"
       class="h-auto max-w-sm rounded-lg shadow-none transition-shadow duration-300 ease-in-out hover:shadow-lg hover:shadow-black/30">
@@ -49,72 +50,80 @@ ear
       <p class='text-xl font-bold'>Title: {{.Title}}</p>
       <p>Author Name: <span class='text-green-300'>{{.Author}}</span></p>
       <p>Duration: <span class='text-green-300'>{{.Duration}}<span></p>
-        <div>
-          <button hx-get="/info?id={{.VideoID}}" hx-swap="outerHTML"
+      <div>
+        <button hx-get="/info?id={{.VideoID}}&title={{.Title}}" hx-swap="outerHTML"
           class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
           Get Download Info</button>
-        </div>
+      </div>
     </div>
   </div>
   {{ end }}
 </div>
 {{ end }}
 
-{{block "videoInfo" .}}
-<div class='flex flex-col gap-3 p-5'></div>
-{{range .Data}}
-<div class="flex gap-5 text-white">
-  <img src="{{.Thumbnail.Src}}" width="{{.Thumbnail.Width}}" height="{{.Thumbnail.Height}}" alt="vid Thumbnail"
-    class="h-auto max-w-sm rounded-lg shadow-none transition-shadow duration-300 ease-in-out hover:shadow-lg hover:shadow-black/30">
-  <div class="flex flex-col justify-center">
-    <p class='text-xl font-bold'>Title: {{.Title}}</p>
-    <p>Author Name: <span class='text-green-300'>{{.Author}}</span></p>
-    <p>Duration: <span class='text-green-300'>{{.Duration}}<span></p>
+{{ block "videoInfo" . }}
+<div class='flex flex-col gap-3 p-5'>
+  {{ range .Data }}
+  <div class="flex gap-5 text-white">
+    <img src="{{.Thumbnail.Src}}" width="{{.Thumbnail.Width}}" height="{{.Thumbnail.Height}}" alt="vid Thumbnail"
+      class="h-auto max-w-sm rounded-lg shadow-none transition-shadow duration-300 ease-in-out hover:shadow-lg hover:shadow-black/30">
+    <div class="flex flex-col justify-center">
+      <p class='text-xl font-bold'>Title: {{.Title}}</p>
+      <p>Author Name: <span class='text-green-300'>{{.Author}}</span></p>
+      <p>Duration: <span class='text-green-300'>{{.Duration}}<span></p>
       <div>
         <form hx-post='/download?id={{.VideoID}}' class='p-3 rounded-md gap-3 flex gap-3'>
           <select name='quality' id='qual' class='border rounded-md text-black'>
-            {{range $val := .VidQuality}}
+            {{ range $val := .VidQuality }}
             <option value="{{$val}}">{{$val}}</option>
-            {{end}}
+            {{ end }}
           </select>
+          <div>
+            <input type='checkbox' name="audioOnly" value="true" id="audioOnly" />
+            <label for="audioOnly">Audio Only</label>
+          </div>
           <button type='submit'
             class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
             Download
           </button>
         </form>
       </div>
+    </div>
   </div>
+  {{ end }}
 </div>
-{{end}}
-</div>
-{{end}}
+{{ end }}
 
-{{block "error" .}}
+{{ block "error" . }}
 <div>
   <p class="text-red-500">{{.error}}</p>
 </div>
-{{end}}
+{{ end }}
 
-{{block "vidInf" .}}
+{{ block "vidInf" . }}
 <img src="{{.Thumbnail.Src}}" width="{{.Thumbnail.Width}}" height="{{.Thumbnail.Height}}" alt="vid Thumbnail"
-    class="h-auto max-w-sm rounded-lg shadow-none transition-shadow duration-300 ease-in-out hover:shadow-lg hover:shadow-black/30">
-  <div class="flex flex-col justify-center">
-    <p class='text-xl font-bold'>Title: {{.Title}}</p>
-    <p>Author Name: <span class='text-green-300'>{{.Author}}</span></p>
-    <p>Duration: <span class='text-green-300'>{{.Duration}}<span></p>
-  </div>
-{{end}}
+  class="h-auto max-w-sm rounded-lg shadow-none transition-shadow duration-300 ease-in-out hover:shadow-lg hover:shadow-black/30" />
+<div class="flex flex-col justify-center">
+  <p class='text-xl font-bold'>Title: {{.Title}}</p>
+  <p>Author Name: <span class='text-green-300'>{{.Author}}</span></p>
+  <p>Duration: <span class='text-green-300'>{{.Duration}}<span></p>
+</div>
+{{ end }}
 
-{{block "downloadInfo" .}}
+{{ block "downloadInfo" . }}
 <form hx-post='/download?id={{.VideoID}}' class='p-3 rounded-md gap-3 flex gap-3'>
   <select name='quality' id='qual' class='border rounded-md text-black'>
-    {{range $val := .VidQuality}}
+    {{ range $val := .VidQuality }}
     <option value="{{$val}}">{{$val}}</option>
-    {{end}}
+    {{ end }}
   </select>
+  <div>
+    <input type='checkbox' name="audioOnly" value="true" id="audioOnly" />
+    <label for="audioOnly">Audio Only</label>
+  </div>
   <button type='submit'
     class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
     Download
   </button>
 </form>
-{{end}}
+{{ end }}

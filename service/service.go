@@ -2,8 +2,11 @@ package service
 
 import (
 	"context"
-	"downloader/models"
+	"io"
+	"os"
+	"ytdl_http/models"
 
+	"github.com/kkdai/youtube/v2"
 	yt "github.com/kkdai/youtube/v2"
 	dlr "github.com/kkdai/youtube/v2/downloader"
 )
@@ -73,7 +76,7 @@ func (s *Service) DownloadInfo(videoID string) ([]string, error) {
 	return qls, nil
 }
 
-// Download started download of video in a new thread based on videoID
+// DownloadVideo started download of video in a new thread based on videoID
 func (s *Service) DownloadVideo(ctx context.Context, id, qual string) error {
 	vid, err := s.ytClient.GetVideoContext(ctx, id)
 	if err != nil {
@@ -84,6 +87,26 @@ func (s *Service) DownloadVideo(ctx context.Context, id, qual string) error {
 		s.Status[id] = "Download Started"
 
 		if err := s.downloader.DownloadComposite(context.Background(), vid.Title+".mp4", vid, qual, "", ""); err != nil {
+			s.Status[id] = err.Error()
+			return
+		}
+
+		s.Status[id] = "Download Done"
+	}()
+
+	return nil
+}
+
+// DownloadAudio started download of video in a new thread based on videoID
+func (s *Service) DownloadAudio(ctx context.Context, id string) error {
+	vid, err := s.ytClient.GetVideoContext(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	go func() {
+		s.Status[id] = "Download Started"
+		if err := s.downloadAudio(vid); err != nil {
 			s.Status[id] = err.Error()
 			return
 		}
@@ -124,6 +147,33 @@ func (s *Service) getVideoInfo(url string) (*models.VideoData, error) {
 	s.Status[vid.ID] = "Not Started"
 
 	return &data, nil
+}
+
+func (s *Service) downloadAudio(vid *youtube.Video) error {
+	ctx := context.Background()
+	outFile, err := os.Create("./Downloads/" + vid.Title + ".m4a")
+	if err != nil {
+		return err
+	}
+
+	audioFormats := vid.Formats.Type("audio")
+	audioFormats.Sort()
+
+	stream, _, err := s.ytClient.GetStreamContext(ctx, vid, &audioFormats[0])
+	if err != nil {
+		return err
+	}
+
+	_, err = io.Copy(outFile, stream)
+	if err != nil {
+		return err
+	}
+
+	if err := outFile.Sync(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (s *Service) getPlaylistInfo(url string) ([]models.VideoData, error) {

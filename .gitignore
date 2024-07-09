@@ -4,6 +4,7 @@
 *.dll
 *.so
 *.dylib
+*.DS_STORE
 
 # Test binary, built with `go test -c`
 *.test
@@ -13,6 +14,7 @@
 
 # Dependency directories
 vendor/
+Downloads/
 
 # Go workspace file
 go.work
@@ -21,7 +23,14 @@ go.work.sum
 # env file
 .env
 
-#editor specifics
+#editor specific directories
 .idea/
 .vscode/
 .visual-studio/
+
+#profiling specific
+*.prof
+
+# air specific directories
+/tmp
+.air.toml
