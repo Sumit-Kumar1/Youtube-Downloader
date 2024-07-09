@@ -10,17 +10,57 @@ import (
 
 // Handler type contains service type for dependency injection.
 type Handler struct {
+	player   map[string]bool
 	servicer Servicer
 }
 
 // New to init the handler.
 func New(s Servicer) *Handler {
-	return &Handler{servicer: s}
+	return &Handler{
+		player:   make(map[string]bool, 0),
+		servicer: s,
+	}
 }
 
 // Page render the root index.html page.
 func (h *Handler) Page(c echo.Context) error {
 	return c.Render(http.StatusOK, "index", nil)
+}
+
+// Page render the root index.html page.
+func (h *Handler) PagePlayer(c echo.Context) error {
+	data, err := getDownloadedFiles()
+	if err != nil {
+		c.Logger().Errorf(err.Error())
+		return c.Render(http.StatusOK, "error", map[string]string{"error": ""})
+	}
+
+	return c.Render(http.StatusOK, "Player", map[string]interface{}{
+		"Data": data,
+	})
+}
+
+func (h *Handler) Play(c echo.Context) error {
+	title := c.QueryParam("title")
+	ext := title[len(title)-3:]
+
+	p := models.Player{
+		ID:    "1",
+		Title: title,
+		Path:  "/resource/" + title,
+	}
+
+	switch ext {
+	case "m4a":
+		p.Type = "audio/mpeg"
+		return c.Render(http.StatusOK, "audio", map[string]interface{}{"Data": p})
+	case "mp4":
+		p.Type = "video/mp4"
+		return c.Render(http.StatusOK, "video", map[string]interface{}{"Data": p})
+	default:
+	}
+
+	return nil
 }
 
 // Status returns the download status of a video
@@ -59,8 +99,6 @@ func (h *Handler) Download(c echo.Context) error {
 	qual := c.FormValue("quality")
 	id := c.FormValue("id")
 	audioOnly := c.FormValue("audioOnly")
-
-	fmt.Println("Audio only: ", audioOnly)
 
 	switch audioOnly {
 	case "":

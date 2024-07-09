@@ -1,15 +1,20 @@
 # Youtube Video Downloader
 
-- This is a **HTMX-golang** project runs at port `http://localhost:12344/`
-- This service requires ffmpeg library to be installed, please install ffmpeg first. Otherwise you will be getting lots of error for download every-time
+<!--toc:start-->
+- [Youtube Video Downloader](#youtube-video-downloader)
+  - [Enhancements](#enhancements)
+    - [Additional Features](#additional-features)
+<!--toc:end-->
 
+- This is a **HTMX-golang** project runs at port `http://localhost:12344/`
+- This service requires ffmpeg library to be installed, please install ffmpeg first. Otherwise lots of error while downloading video
 Steps to run the project (makefile)
 
 1. Clone the project
-2. Make sure `make ` is installed in your system
+2. Make sure `make` is installed in your system
 3. Run the project using `make` help:
-    3.1 to build simply `make build`
-    3.2 to run `make run`
+    3.1. to build simply `make build`
+    3.2. to run `make run`
 4. Open the browser and go to `http://localhost:12344/`
 5. You can first get the info about the video/playlist/youtube-shorts by entering the youtube-url in the input box and clicking the "Get Info" button
 6. You can also download the video by clicking the "Download" button in the page for which download is requested
@@ -45,6 +50,10 @@ Steps to run the project (makefile)
 - [ ] Playlist Download:
   - Allow users to download entire playlists
   - Use the YouTube Data API to retrieve the list of videos in the playlist
+  
+- [ ] Pagination For Playlist:
+  - Test URL : [The Biggest playlist](https://www.youtube.com/playlist?list=PLXFwTY00FRUUZzL_Vjhy-bE8WIao3eyOi)
+  - Add the pagination support for playlist to load faster
 
 - [ ] Database Storage:
   - Store downloaded videos and metadata in a database
