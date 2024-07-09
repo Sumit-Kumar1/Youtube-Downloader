@@ -1,86 +1,62 @@
 {{define "Player"}}
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Player</title>
-    <script
-      src="https://unpkg.com/htmx.org@1.9.12"
-      integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2"
-      crossorigin="anonymous"
-    ></script>
-  </head>
-  <script defer src="https://cdn.tailwindcss.com"></script>
 
-  <body class="bg-[#1d1d1d]">
-    <div class="flex mt-5">
-      <a
-        href="/"
-        class="flex-none w-1/7 bg-[#1d1d1d] border border-[#2272FF] rounded-xl p-3 hover:bg-blue-700 text-[#2272FF] hover:text-white font-bold"
-      >
-        Home</a
-      >
-      <h1 class="flex-initial w-full text-center text-white text-3xl">
-        Player
-      </h1>
-    </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Player</title>
+  <script src="https://unpkg.com/htmx.org@1.9.12"
+    integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous">
+  </script>
+</head>
+<script defer src="https://cdn.tailwindcss.com"></script>
 
-    <div
-      class="flex p-5 gap-3 max-h-screen text-white justify-center min-h-[80px]"
-    >
-      <div
-        id="list"
-        class="w-1/4 border rounded-xl shadow-lg h-auto p-5 flex gap-5 flex-col"
-      >
-        <details>
-          <summary
-            class="pl-2 hover:underline hover:underline-offset-4 text-2xl text-blue-400"
-          >
-            Audio Files
-          </summary>
-          <ul class="list-decimal pl-8">
-            {{range .Data}} {{if .IsAudio}}
-            <li></li>
-              <button
-                hx-get="/play?title={{.Title}}"
-                hx-swap="innerHTML"
-                hx-target="#player"
-                class="hover:underline hover:underline-offset-2 hover:text-green-300"
-              >
-                {{.Title}}
-              </button>
-            </li>
-            {{end}} {{end}}
-          </ul>
-        </details>
-        <details>
-          <summary
-            class="pl-2 hover:underline hover:underline-offset-4 text-2xl text-blue-400"
-          >
-            Video Files
-          </summary>
-          <ul class="list-decimal pl-8">
-            {{range .Data}} {{if .IsAudio}}{{else}}
-            <li>
-              <button
-                hx-get="/play?title={{.Title}}"
-                hx-swap="innerHTML"
-                hx-target="#player"
-                class="hover:underline hover:underline-offset-2 hover:text-green-300"
-              >
-                {{.Title}}
-              </button>
-            </li>
-            {{end}} {{end}}
-          </ul>
-        </details>
-      </div>
-      <div id="player" class="p-5 w-full border rounded-xl h-[90vh] shadow-lg">
-        <p>Your Audio/Video Player Goes here</p>
-      </div>
+<body class="bg-[#1d1d1d]">
+  <div class="flex mt-5">
+    <a href="/"
+      class="flex-none w-1/7 bg-[#1d1d1d] border border-[#2272FF] rounded-xl p-3 hover:bg-blue-700 text-[#2272FF] hover:text-white font-bold">
+      Home</a>
+    <h1 class="flex-initial w-full text-center text-white text-3xl">
+      Player
+    </h1>
+  </div>
+
+  <div class="flex p-5 gap-3 max-h-screen text-white justify-center min-h-[80px]">
+    <div id="list" class="w-1/4 border rounded-xl shadow-lg h-auto p-5 flex gap-3 flex-col">
+      <p class="pl-2 hover:underline hover:underline-offset-4 text-2xl text-blue-400">Audio Files</p>
+      <details class="overflow-y-auto overflow-x-hidden">
+        <ul class="list-decimal pl-10 max-h-[39vh]">
+          {{range .Data}} {{if .IsAudio}}
+          <li></li>
+          <button hx-get="/play?title={{.Title}}" hx-swap="innerHTML" hx-target="#player"
+            class="hover:underline hover:underline-offset-2 hover:text-green-300">
+            {{.Title}}
+          </button>
+          </li>
+          {{end}} {{end}}
+        </ul>
+      </details>
+      <p class="pl-2 hover:underline hover:underline-offset-4 text-2xl text-blue-400">Video Files</p>
+      <details class="overflow-y-auto max-h-[39vh]">
+        <ul class="list-decimal pl-8">
+          {{range .Data}} {{if .IsAudio}}{{else}}
+          <li>
+            <button hx-get="/play?title={{.Title}}" hx-swap="innerHTML" hx-target="#player"
+              class="hover:underline hover:underline-offset-2 hover:text-green-300">
+              {{.Title}}
+            </button>
+          </li>
+          {{end}} {{end}}
+        </ul>
+      </details>
     </div>
-  </body>
+    <div id="player" class="p-5 w-full border rounded-xl h-full shadow-lg">
+      <p>Your Audio/Video Player Goes here</p>
+    </div>
+  </div>
+</body>
+
 </html>
 {{end}} {{block "audio" . }}
 <div class="flex flex-col gap-5 text-center justify-center items-center">
