@@ -46,6 +46,12 @@ audit:
 # ==================================================================================== #
 
 ## test: run all tests
+.PHONY: lint
+lint:
+	go fmt ./...
+	golangci-lint run --enable-all
+
+## test: run all tests
 .PHONY: test
 test:
 	go test -v -race -buildvcs ./...
