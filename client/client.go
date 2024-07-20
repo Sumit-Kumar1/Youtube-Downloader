@@ -1,6 +1,9 @@
 package client
 
 import (
+	"context"
+	"io"
+	"os"
 	"ytdl_http/models"
 
 	dlr "github.com/kkdai/youtube/v2/downloader"
@@ -69,4 +72,65 @@ func (c Client) GetPlaylist(url string) (*models.Playlist, error) {
 	}
 
 	return &playlist, nil
+}
+
+func (c Client) GetDownloadInfo(videoID string) ([]string, error) {
+	vid, err := c.Ytdl.GetVideo(videoID)
+	if err != nil {
+		return nil, err
+	}
+
+	qls := make([]string, 0, len(vid.Formats))
+	for _, format := range vid.Formats {
+		if format.QualityLabel != "" {
+			qls = append(qls, format.QualityLabel)
+		}
+	}
+
+	return qls, nil
+}
+
+func (c Client) DownloadVideo(id, qual string) error {
+	vid, err := c.Ytdl.GetVideo(id)
+	if err != nil {
+		return err
+	}
+
+	if err := c.Ytdl.DownloadComposite(context.Background(), vid.Title+".mp4", vid, qual, "", ""); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c Client) DownloadAudio(id, qual string) error {
+	ctx := context.Background()
+	vid, err := c.Ytdl.GetVideoContext(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	outFile, err := os.Create("./Downloads/" + vid.Title + ".m4a")
+	if err != nil {
+		return err
+	}
+
+	audioFormats := vid.Formats.Type("audio")
+	audioFormats.Sort()
+
+	stream, _, err := c.Ytdl.GetStreamContext(ctx, vid, &audioFormats[0])
+	if err != nil {
+		return err
+	}
+
+	_, err = io.Copy(outFile, stream)
+	if err != nil {
+		return err
+	}
+
+	if err := outFile.Sync(); err != nil {
+		return err
+	}
+
+	return nil
 }
