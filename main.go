@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"os"
 	"time"
 	"ytdl_http/client"
 	"ytdl_http/handler"
@@ -23,7 +24,15 @@ func main() {
 	t := models.NewTemplate("html")
 	e.Renderer = t
 
-	h := initServices()
+	dirPath := "./Downloads/"
+	if _, err := os.Stat(dirPath); os.IsNotExist(err) { // Check if directory exists
+		if err := os.Mkdir(dirPath, 0755); err != nil {
+			e.Logger.Errorf("error while creating the directory: %s", err.Error())
+			return
+		}
+	}
+
+	h := initServices(dirPath)
 
 	addMiddleWares(e)
 
@@ -42,8 +51,8 @@ func main() {
 	e.Logger.Fatal(e.Start(":12344"))
 }
 
-func initServices() *handler.Handler {
-	d := &dlr.Downloader{OutputDir: "/tmp/Downloads"}
+func initServices(dir string) *handler.Handler {
+	d := &dlr.Downloader{OutputDir: dir}
 	ytCl := client.New(d)
 	s := service.New(ytCl)
 
