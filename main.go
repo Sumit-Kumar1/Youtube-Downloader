@@ -2,14 +2,14 @@ package main
 
 import (
 	"net/http"
-	"os"
 	"time"
+	"ytdl_http/client"
 	"ytdl_http/handler"
 	"ytdl_http/models"
 	"ytdl_http/service"
 
-	yt "github.com/kkdai/youtube/v2"
 	dlr "github.com/kkdai/youtube/v2/downloader"
+	"golang.org/x/time/rate"
 
 	"github.com/labstack/echo-contrib/echoprometheus"
 	"github.com/labstack/echo/v4"
@@ -24,12 +24,6 @@ func main() {
 	e.Renderer = t
 
 	h := initServices()
-
-	err := os.Mkdir("Downloads", 0o755)
-	if err != nil && err.Error() != "mkdir Downloads: file exists" {
-		e.Logger.Errorf("Error while creating folder: %s", err.Error())
-		return
-	}
 
 	addMiddleWares(e)
 
@@ -49,23 +43,23 @@ func main() {
 }
 
 func initServices() *handler.Handler {
-	c := &yt.Client{MaxRoutines: 8, ChunkSize: yt.Size1Mb}
-	d := &dlr.Downloader{OutputDir: "Downloads"}
-	s := service.New(c, d)
+	d := &dlr.Downloader{OutputDir: "/tmp/Downloads"}
+	ytCl := client.New(d)
+	s := service.New(ytCl)
 
 	return handler.New(s)
 }
 
-func addMiddleWares(e *echo.Echo) {
-	e.Use(middleware.Logger())
-	e.Use(echoprometheus.NewMiddleware("ytdl_http"))
-	e.Use(middleware.Recover())
-	e.Pre(middleware.RemoveTrailingSlash())
-	// e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(
-	// 	rate.Limit(160),
-	// )))
+func addMiddleWares(app *echo.Echo) {
+	app.Use(middleware.Logger())
+	app.Use(echoprometheus.NewMiddleware("ytdl_http"))
+	app.Use(middleware.Recover())
+	app.Pre(middleware.RemoveTrailingSlash())
+	app.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(
+		rate.Limit(160),
+	)))
 
-	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
+	app.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
 		Skipper:      middleware.DefaultSkipper,
 		ErrorMessage: "Timed-out due to no activity for 3 mins",
 		Timeout:      180 * time.Second,
