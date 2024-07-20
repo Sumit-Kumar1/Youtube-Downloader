@@ -3,12 +3,11 @@ package models
 import "time"
 
 type Video struct {
-	ID         *string
-	Thumbnail  *Image
-	Title      *string
-	Author     *string
-	Duration   *time.Duration
-	VidQuality []string
+	ID        string
+	Author    string
+	Title     string
+	Thumbnail Image
+	Duration  time.Duration
 }
 
 type Playlist struct {
@@ -16,15 +15,7 @@ type Playlist struct {
 	Title       string
 	Description string
 	Author      string
-	Videos      []*PlaylistEntry
-}
-
-type PlaylistEntry struct {
-	ID         string
-	Title      string
-	Author     string
-	Duration   time.Duration
-	Thumbnails Image
+	Videos      []Video
 }
 
 type Image struct {
