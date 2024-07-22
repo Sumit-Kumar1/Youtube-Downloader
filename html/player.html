@@ -8,7 +8,7 @@
   <title>Player</title>
   <script src="https://unpkg.com/htmx.org@1.9.12"
     integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous">
-  </script>
+    </script>
 </head>
 <script defer src="https://cdn.tailwindcss.com"></script>
 
@@ -23,44 +23,42 @@
   </div>
 
   <div class="flex p-5 gap-3 max-h-screen text-white justify-center min-h-[80px]">
-    <div id="list" class="w-1/4 border rounded-xl shadow-lg h-auto p-5 flex gap-3 flex-col">
+    <div id="list" class="w-1/4 rounded-xl shadow-lg h-auto p-5 flex gap-5 flex-col">
       <p class="pl-2 hover:underline hover:underline-offset-4 text-2xl text-blue-400">Audio Files</p>
       <details class="overflow-y-auto overflow-x-hidden">
-        <ul class="list-decimal pl-10 max-h-[39vh]">
+        <div class="flex flex-col gap-3">
           {{range .Data}} {{if .IsAudio}}
-          <li></li>
           <button hx-get="/play?title={{.Title}}" hx-swap="innerHTML" hx-target="#player"
             class="hover:underline hover:underline-offset-2 hover:text-green-300">
             {{.Title}}
           </button>
-          </li>
           {{end}} {{end}}
-        </ul>
+        </div>
       </details>
       <p class="pl-2 hover:underline hover:underline-offset-4 text-2xl text-blue-400">Video Files</p>
-      <details class="overflow-y-auto max-h-[39vh]">
-        <ul class="list-decimal pl-8">
+      <details class="overflow-y-auto">
+        <div class="max-h-[39vh] flex flex-col gap-3">
           {{range .Data}} {{if .IsAudio}}{{else}}
-          <li>
-            <button hx-get="/play?title={{.Title}}" hx-swap="innerHTML" hx-target="#player"
-              class="hover:underline hover:underline-offset-2 hover:text-green-300">
-              {{.Title}}
-            </button>
-          </li>
+          <button hx-get="/play?title={{.Title}}" hx-swap="innerHTML" hx-target="#player"
+            class="hover:underline hover:underline-offset-2 hover:text-green-300">
+            {{.Title}}
+          </button>
           {{end}} {{end}}
-        </ul>
+        </div>
       </details>
     </div>
-    <div id="player" class="p-5 w-full border rounded-xl h-full shadow-lg">
+    <div id="player" class="p-5 w-full rounded-xl h-full shadow-lg">
       <p>Your Audio/Video Player Goes here</p>
     </div>
   </div>
 </body>
 
 </html>
-{{end}} {{block "audio" . }}
+{{end}}
+
+{{block "audio" . }}
 <div class="flex flex-col gap-5 text-center justify-center items-center">
-  <audio controls muted className="h-full  rounded-lg w-2/3" id="aplay">
+  <audio controls class="h-full rounded-lg w-2/3" id="aplay">
     <source src="{{.Data.Path}}" type="{{.Data.Type}}" />
     Your browser does not support the audio element.
   </audio>
@@ -68,7 +66,7 @@
 </div>
 {{end}} {{block "video" . }}
 <div class="flex flex-col gap-5 text-center justify-center items-center">
-  <video controls muted className="h-full w-full rounded-lg" id="vplay">
+  <video controls class="h-full w-full rounded-xl" id="vplay">
     <source src="{{.Data.Path}}" type="{{.Data.Type}}" />
     Your browser does not support the audio element.
   </video>
