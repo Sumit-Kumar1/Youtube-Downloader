@@ -96,7 +96,8 @@ func (c Client) DownloadVideo(id, qual string) error {
 		return err
 	}
 
-	if err := c.Ytdl.DownloadComposite(context.Background(), vid.Title+".mp4", vid, qual, "", ""); err != nil {
+	title := formatName(vid.Title)
+	if err := c.Ytdl.DownloadComposite(context.Background(), title+".mp4", vid, qual, "", ""); err != nil {
 		return err
 	}
 
@@ -110,7 +111,9 @@ func (c Client) DownloadAudio(id, qual string) error {
 		return err
 	}
 
-	outFile, err := os.Create("./Downloads/" + vid.Title + ".m4a")
+	title := formatName(vid.Title)
+
+	outFile, err := os.Create("./Downloads/" + title + ".m4a")
 	if err != nil {
 		return err
 	}
