@@ -1,204 +1,92 @@
 package service
 
 import (
-	"context"
-	"io"
-	"os"
 	"ytdl_http/models"
-
-	"github.com/kkdai/youtube/v2"
-	yt "github.com/kkdai/youtube/v2"
-	dlr "github.com/kkdai/youtube/v2/downloader"
 )
 
 type Service struct {
-	ytClient   *yt.Client
-	downloader *dlr.Downloader
-	Status     map[string]string
+	YtClient YtClient
+	Status   map[string]string
 }
 
-func New(c *yt.Client, d *dlr.Downloader) *Service {
+func New(y YtClient) *Service {
 	return &Service{
-		ytClient:   c,
-		downloader: d,
-		Status:     make(map[string]string, 0),
+		YtClient: y,
+		Status:   make(map[string]string, 0),
 	}
 }
 
-// GetStatus get the download status of the video by VideoID
+// GetStatus get the download status of the video by ID
 func (s *Service) GetStatus(videoID string) string {
 	return s.Status[videoID]
 }
 
-// GetInfo provides the video/'s info of the provided url
-func (s *Service) GetInfo(url string) ([]models.VideoData, error) {
-	isPlaylist, err := validateURL(url)
-	if err != nil {
+func (s *Service) GetInfo(url string) ([]models.Video, error) {
+	if err := validateURL(url); err != nil {
 		return nil, err
 	}
 
-	// clear status map when we get new request
-	for k := range s.Status {
-		delete(s.Status, k)
+	if isPlaylistURL(url) {
+		return s.getPlaylistData(url)
 	}
 
-	if isPlaylist {
-		return s.getPlaylistInfo(url)
-	}
-
-	data := []models.VideoData{}
-	d, err := s.getVideoInfo(url)
-	if err != nil {
-		return nil, err
-	}
-
-	data = append(data, *d)
-
-	return data, nil
+	return s.getVideoData(url)
 }
 
-// DownloadInfo return the quality of video for download
 func (s *Service) DownloadInfo(videoID string) ([]string, error) {
-	vid, err := s.ytClient.GetVideoContext(context.Background(), videoID)
-	if err != nil {
-		return nil, err
-	}
-
-	s.Status[vid.ID] = "Not Started"
-
-	qls := []string{}
-	for _, format := range vid.Formats {
-		if format.QualityLabel != "" {
-			qls = append(qls, format.QualityLabel)
-		}
-	}
-
-	return qls, nil
+	return s.YtClient.GetDownloadInfo(videoID)
 }
 
-// DownloadVideo started download of video in a new thread based on videoID
-func (s *Service) DownloadVideo(ctx context.Context, id, qual string) error {
-	vid, err := s.ytClient.GetVideoContext(ctx, id)
-	if err != nil {
-		return err
-	}
+func (s *Service) Download(id, qual, audioOnly string) error {
+	s.Status[id] = "download started"
 
-	go func() {
-		s.Status[id] = "Download Started"
-
-		if err := s.downloader.DownloadComposite(context.Background(), vid.Title+".mp4", vid, qual, "", ""); err != nil {
+	switch audioOnly {
+	case "":
+		if err := s.YtClient.DownloadVideo(id, qual); err != nil {
 			s.Status[id] = err.Error()
-			return
+
+			return err
 		}
 
-		s.Status[id] = "Download Done"
-	}()
-
-	return nil
-}
-
-// DownloadAudio started download of video in a new thread based on videoID
-func (s *Service) DownloadAudio(ctx context.Context, id string) error {
-	vid, err := s.ytClient.GetVideoContext(ctx, id)
-	if err != nil {
-		return err
-	}
-
-	go func() {
-		s.Status[id] = "Download Started"
-		if err := s.downloadAudio(vid); err != nil {
+	case "true":
+		if err := s.YtClient.DownloadAudio(id, qual); err != nil {
 			s.Status[id] = err.Error()
-			return
-		}
 
-		s.Status[id] = "Download Done"
-	}()
+			return err
+		}
+	}
+
+	s.Status[id] = "download complete, check Temp/Downloads"
 
 	return nil
 }
 
-func (s *Service) getVideoInfo(url string) (*models.VideoData, error) {
-	vid, err := s.ytClient.GetVideo(url)
+func (s *Service) getPlaylistData(url string) ([]models.Video, error) {
+	pl, err := s.YtClient.GetPlaylist(url)
 	if err != nil {
 		return nil, err
 	}
 
-	qls := make([]string, 0, len(vid.Formats))
-	for _, format := range vid.Formats {
-		if format.QualityLabel != "" {
-			qls = append(qls, format.QualityLabel)
-		}
+	if pl == nil {
+		return nil, nil
 	}
 
-	tb := vid.Thumbnails[len(vid.Thumbnails)/2]
-	data := models.VideoData{
-		VideoID:  &vid.ID,
-		Title:    &vid.Title,
-		Author:   &vid.Author,
-		Duration: &vid.Duration,
-		Thumbnail: &models.Image{
-			Src:    tb.URL,
-			Width:  tb.Width,
-			Height: tb.Height,
-		},
-		VidQuality: qls,
-	}
-
-	s.Status[vid.ID] = "Not Started"
-
-	return &data, nil
+	return pl.Videos, nil
 }
 
-func (s *Service) downloadAudio(vid *youtube.Video) error {
-	ctx := context.Background()
-	outFile, err := os.Create("./Downloads/" + vid.Title + ".m4a")
-	if err != nil {
-		return err
-	}
+func (s *Service) getVideoData(url string) ([]models.Video, error) {
+	var vids []models.Video
 
-	audioFormats := vid.Formats.Type("audio")
-	audioFormats.Sort()
-
-	stream, _, err := s.ytClient.GetStreamContext(ctx, vid, &audioFormats[0])
-	if err != nil {
-		return err
-	}
-
-	_, err = io.Copy(outFile, stream)
-	if err != nil {
-		return err
-	}
-
-	if err := outFile.Sync(); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (s *Service) getPlaylistInfo(url string) ([]models.VideoData, error) {
-	pl, err := s.ytClient.GetPlaylist(url)
+	vid, err := s.YtClient.GetVideo(url)
 	if err != nil {
 		return nil, err
 	}
 
-	data := make([]models.VideoData, 0, len(pl.Videos))
-	for _, vid := range pl.Videos {
-		tb := vid.Thumbnails[len(vid.Thumbnails)/2]
-		d := models.VideoData{
-			VideoID:  &vid.ID,
-			Title:    &vid.Title,
-			Author:   &vid.Author,
-			Duration: &vid.Duration,
-			Thumbnail: &models.Image{
-				Src:    tb.URL,
-				Height: tb.Height,
-				Width:  tb.Width,
-			},
-		}
-
-		data = append(data, d)
+	if vid == nil {
+		return nil, nil
 	}
 
-	return data, nil
+	vids = append(vids, *vid)
+
+	return vids, nil
 }
