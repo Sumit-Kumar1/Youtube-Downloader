@@ -49,14 +49,14 @@ func (s *Service) Download(id, qual, audioOnly string) error {
 		}
 
 	case "true":
-		if err := s.YtClient.DownloadAudio(id, qual); err != nil {
+		if err := s.YtClient.DownloadAudio(id); err != nil {
 			s.Status[id] = err.Error()
 
 			return err
 		}
 	}
 
-	s.Status[id] = "download complete, check Temp/Downloads"
+	s.Status[id] = "download complete !!"
 
 	return nil
 }

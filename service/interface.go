@@ -9,5 +9,5 @@ type YtClient interface {
 	GetPlaylist(url string) (*models.Playlist, error)
 	GetDownloadInfo(videoID string) ([]string, error)
 	DownloadVideo(id, qual string) error
-	DownloadAudio(id, qual string) error
+	DownloadAudio(id string) error
 }
