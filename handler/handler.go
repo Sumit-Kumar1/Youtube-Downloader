@@ -22,11 +22,15 @@ func New(s Servicer) *Handler {
 }
 
 // Page render the root index.html page.
+//
+//nolint:revive // to make it consistent at main
 func (h *Handler) Page(c echo.Context) error {
 	return c.Render(http.StatusOK, "index", nil)
 }
 
 // Page render the root index.html page.
+//
+//nolint:revive // to make it consistent at main
 func (h *Handler) PagePlayer(c echo.Context) error {
 	data, err := getDownloadedFiles()
 	if err != nil {
@@ -34,28 +38,22 @@ func (h *Handler) PagePlayer(c echo.Context) error {
 		return c.Render(http.StatusOK, "error", map[string]string{"error": ""})
 	}
 
-	return c.Render(http.StatusOK, "Player", map[string]interface{}{
-		"Data": data,
-	})
+	return c.Render(http.StatusOK, "Player", map[string]any{"Data": data})
 }
 
+//nolint:revive // to make it consistent at main
 func (h *Handler) Play(c echo.Context) error {
+	var p models.Player
+
 	title := c.QueryParam("title")
-	ext := title[len(title)-3:]
 
-	p := models.Player{
-		ID:    "1",
-		Title: title,
-		Path:  "/resource/" + title,
-	}
+	p.FillByName(title)
 
-	switch ext {
-	case "m4a":
-		p.Type = "audio/mpeg"
-		return c.Render(http.StatusOK, "audio", map[string]interface{}{"Data": p})
-	case "mp4":
-		p.Type = "video/mp4"
-		return c.Render(http.StatusOK, "video", map[string]interface{}{"Data": p})
+	switch p.Type {
+	case "audio/mpeg":
+		return c.Render(http.StatusOK, "audio", map[string]any{"Data": p})
+	case "video/mp4":
+		return c.Render(http.StatusOK, "video", map[string]any{"Data": p})
 	default:
 	}
 
@@ -98,8 +96,7 @@ func (h *Handler) Download(c echo.Context) error {
 		return err
 	}
 
-	return c.Render(http.StatusOK, "status", map[string]interface{}{
-		"ID": id})
+	return c.Render(http.StatusOK, "status", map[string]any{"ID": id})
 }
 
 func (h *Handler) DownloadInfo(c echo.Context) error {
@@ -110,7 +107,7 @@ func (h *Handler) DownloadInfo(c echo.Context) error {
 		return c.String(http.StatusBadRequest, err.Error())
 	}
 
-	return c.Render(http.StatusOK, "downloadInfo", map[string]interface{}{
+	return c.Render(http.StatusOK, "downloadInfo", map[string]any{
 		"ID":         videoID,
 		"VidQuality": qualities,
 	})
