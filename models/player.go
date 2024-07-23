@@ -2,6 +2,7 @@ package models
 
 const (
 	m4aExt    = "m4a"
+	mp3Ext    = "mp3"
 	mp4Ext    = "mp4"
 	audioType = "audio/mpeg"
 	videoType = "video/mp4"
@@ -22,7 +23,7 @@ func (p *Player) FillByName(name string) {
 
 	ext := name[len(name)-3:]
 	switch ext {
-	case m4aExt:
+	case m4aExt, mp3Ext:
 		p.IsAudio = true
 		p.Type = audioType
 	case mp4Ext:
