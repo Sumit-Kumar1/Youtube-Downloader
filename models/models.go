@@ -19,7 +19,7 @@ type Playlist struct {
 }
 
 type Image struct {
-	Url    string
+	URL    string
 	Width  uint
 	Height uint
 }

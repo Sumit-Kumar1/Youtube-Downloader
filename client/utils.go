@@ -12,7 +12,7 @@ func getThumbnail(tbs youtube.Thumbnails) *models.Image {
 	tb := tbs[len(tbs)/2]
 
 	img := models.Image{
-		Url:    tb.URL,
+		URL:    tb.URL,
 		Height: tb.Height,
 		Width:  tb.Width,
 	}

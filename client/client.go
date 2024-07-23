@@ -81,9 +81,9 @@ func (c Client) GetDownloadInfo(videoID string) ([]string, error) {
 	}
 
 	qls := make([]string, 0, len(vid.Formats))
-	for _, format := range vid.Formats {
-		if format.QualityLabel != "" {
-			qls = append(qls, format.QualityLabel)
+	for i := range vid.Formats {
+		if vid.Formats[i].QualityLabel != "" {
+			qls = append(qls, vid.Formats[i].QualityLabel)
 		}
 	}
 
@@ -104,7 +104,7 @@ func (c Client) DownloadVideo(id, qual string) error {
 	return nil
 }
 
-func (c Client) DownloadAudio(id, qual string) error {
+func (c Client) DownloadAudio(id string) error {
 	ctx := context.Background()
 	vid, err := c.Ytdl.GetVideoContext(ctx, id)
 	if err != nil {
