@@ -9,6 +9,10 @@ import (
 )
 
 func getThumbnail(tbs youtube.Thumbnails) *models.Image {
+	if len(tbs) == 0 {
+		return nil
+	}
+
 	tb := tbs[len(tbs)/2]
 
 	img := models.Image{
@@ -25,10 +29,8 @@ func formatName(title string) string {
 		return title
 	}
 
-	name := strings.Split(title, "|")[0]
 	re := regexp.MustCompile(`[^a-zA-Z0-9 ]`)
+	name := re.ReplaceAllString(title, "")
 
-	name = re.ReplaceAllString(name, "")
-
-	return name
+	return strings.TrimSpace(name)
 }
