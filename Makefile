@@ -49,7 +49,7 @@ audit:
 .PHONY: lint
 lint:
 	go fmt ./...
-	golangci-lint run --enable-all
+	golangci-lint run ./...
 
 ## test: run all tests
 .PHONY: test

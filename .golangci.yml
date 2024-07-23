@@ -44,20 +44,6 @@ linters-settings:
         replacement: 'any'
   goimports:
     local-prefixes: github.com/golangci/golangci-lint
-  mnd:
-    # don't include the "operation" and "assign"
-    checks:
-      - argument
-      - case
-      - condition
-      - return
-    ignored-numbers:
-      - '0'
-      - '1'
-      - '2'
-      - '3'
-    ignored-functions:
-      - strings.SplitN
   govet:
     settings:
       printf:
@@ -108,7 +94,6 @@ linters:
     - godox
     - gofmt
     - goimports
-    - mnd
     - goprintffuncname
     - gosec
     - gosimple
@@ -122,7 +107,6 @@ linters:
     - revive
     - staticcheck
     - stylecheck
-    - testifylint
     - unconvert
     - unparam
     - unused
@@ -133,7 +117,6 @@ issues:
     - path: (.+)_test\.go
       linters:
         - dupl
-        - mnd
         - lll
 
     # The logic of creating a linter is similar between linters, it's not duplication.
@@ -162,13 +145,7 @@ issues:
     - path: pkg/golinters/gci/gci.go
       linters: [staticcheck]
       text: "SA1019: settings.LocalPrefixes is deprecated: use Sections instead."
-    - path: pkg/golinters/mnd/mnd.go
-      linters: [staticcheck]
-      text: "SA1019: settings.Settings is deprecated: use root level settings instead."
-    - path: pkg/golinters/mnd/mnd.go
-      linters: [staticcheck]
-      text: "SA1019: config.GoMndSettings is deprecated: use MndSettings."
-
+    
     # Related to `run.go`, it cannot be removed.
     - path: pkg/golinters/gofumpt/gofumpt.go
       linters: [staticcheck]
