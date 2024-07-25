@@ -39,7 +39,7 @@ Steps to run the project (makefile)
   - Display a progress bar to indicate the download progress
   - Update the progress bar in real-time using JavaScript
 
-- [ ] Error Handling: (WIP)
+- [x] Error Handling:
   - Handle errors gracefully and provide informative messages to users
   - Log errors for debugging purposes
 
@@ -51,7 +51,7 @@ Steps to run the project (makefile)
   - Allow users to download entire playlists
   - Use the YouTube Data API to retrieve the list of videos in the playlist
   
-- [ ] Pagination For Playlist:
+- [ ] Pagination For Playlist: (WIP)
   - Test URL : [The Biggest playlist](https://www.youtube.com/playlist?list=PLXFwTY00FRUUZzL_Vjhy-bE8WIao3eyOi)
   - Add the pagination support for playlist to load faster
 
