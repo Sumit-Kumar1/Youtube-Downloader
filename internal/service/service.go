@@ -1,7 +1,7 @@
 package service
 
 import (
-	"ytdl_http/models"
+	"ytdl_http/internal/models"
 )
 
 type Service struct {

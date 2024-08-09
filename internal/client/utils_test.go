@@ -2,7 +2,8 @@ package client
 
 import (
 	"testing"
-	"ytdl_http/models"
+
+	"ytdl_http/internal/models"
 
 	"github.com/kkdai/youtube/v2"
 	"github.com/stretchr/testify/assert"

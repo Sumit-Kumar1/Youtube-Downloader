@@ -4,7 +4,8 @@ import (
 	"context"
 	"io"
 	"os"
-	"ytdl_http/models"
+
+	"ytdl_http/internal/models"
 
 	dlr "github.com/kkdai/youtube/v2/downloader"
 )
@@ -18,21 +19,21 @@ func New(d *dlr.Downloader) Client {
 }
 
 func (c Client) GetVideo(url string) (*models.Video, error) {
-	ytvid, err := c.Ytdl.GetVideo(url)
+	ytVid, err := c.Ytdl.GetVideo(url)
 	if err != nil {
 		return nil, err
 	}
 
-	if ytvid == nil {
+	if ytVid == nil {
 		return nil, nil
 	}
 
 	vid := models.Video{
-		ID:        ytvid.ID,
-		Author:    ytvid.Author,
-		Title:     ytvid.Title,
-		Duration:  ytvid.Duration,
-		Thumbnail: *getThumbnail(ytvid.Thumbnails),
+		ID:        ytVid.ID,
+		Author:    ytVid.Author,
+		Title:     ytVid.Title,
+		Duration:  ytVid.Duration,
+		Thumbnail: *getThumbnail(ytVid.Thumbnails),
 	}
 
 	return &vid, nil

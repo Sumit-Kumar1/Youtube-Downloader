@@ -3,7 +3,8 @@ package handler
 import (
 	"os"
 	"strconv"
-	"ytdl_http/models"
+
+	"ytdl_http/internal/models"
 )
 
 func getDownloadedFiles() ([]models.Player, error) {

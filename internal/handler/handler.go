@@ -2,7 +2,8 @@ package handler
 
 import (
 	"net/http"
-	"ytdl_http/models"
+
+	"ytdl_http/internal/models"
 
 	"github.com/labstack/echo/v4"
 )

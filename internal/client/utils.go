@@ -3,7 +3,8 @@ package client
 import (
 	"regexp"
 	"strings"
-	"ytdl_http/models"
+
+	"ytdl_http/internal/models"
 
 	"github.com/kkdai/youtube/v2"
 )

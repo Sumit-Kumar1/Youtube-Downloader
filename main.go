@@ -5,10 +5,10 @@ import (
 	"os"
 	"time"
 
-	"ytdl_http/client"
-	"ytdl_http/handler"
-	"ytdl_http/models"
-	"ytdl_http/service"
+	"ytdl_http/internal/client"
+	"ytdl_http/internal/handler"
+	"ytdl_http/internal/models"
+	"ytdl_http/internal/service"
 
 	"golang.org/x/time/rate"
 

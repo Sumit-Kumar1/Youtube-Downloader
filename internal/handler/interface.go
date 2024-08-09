@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"ytdl_http/models"
+	"ytdl_http/internal/models"
 )
 
 type Servicer interface {
