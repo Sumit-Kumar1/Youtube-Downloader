@@ -26,7 +26,7 @@
 </head>
 <script defer src="https://cdn.tailwindcss.com"></script>
 
-<body class="bg-[#1d1d1d]">
+<body class="bg-[#1d1d1d] p-10">
   <h1 class="text-5xl text-white m-3 text-center">
     Youtube Video Downloader
   </h1>
@@ -47,7 +47,7 @@
 
 
   <div id="dContainer"
-    class="w-full max-h-[83vh] p-4 bg-white border border-gray-200 rounded-lg shadow-lg dark:bg-gray-800 dark:border-gray-700 hover:bg-transparent overflow-y-scroll shadow-xl">
+    class="w-full max-h-[83vh] p-4 bg-white rounded-lg shadow-lg dark:bg-[#1d1d1d] overflow-y-scroll shadow-lg border-b-dotted shadow-gray-800">
     <svg id="spinner" class="htmx-indicator text-center block" width="40" height="40" viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg">
       <style>
@@ -123,9 +123,9 @@
 {{ end }}
 
 {{ block "info" . }}
-<div class='flex flex-col gap-3 p-5 text-white'>
+<div class='flex flex-col gap-3 p-3 text-white'>
   {{ range .Data}}
-  <div class="flex gap-5">
+  <div class="flex gap-5 hover:bg-gray-700 p-5 border-dotted border-2 border-[#1d1d1d] rounded-lg">
     <img src="{{.Thumbnail.URL}}" width="{{.Thumbnail.Width}}" height="{{.Thumbnail.Height}}" alt="vid Thumbnail"
       sizes="(max-width: 340px) 300px,(max-width: 500px) 450px,900px" loading="lazy"
       class="object-fill h-auto max-w-sm rounded-lg shadow-none transition-shadow duration-300 ease-in-out hover:shadow-lg hover:shadow-black/30">
@@ -161,7 +161,7 @@
 {{ end }}
 
 {{ block "downloadInfo" . }}
-<form hx-post='/download?id={{.ID}}' hx-indicator="#spinner" class='p-3 rounded-md gap-3 flex gap-3'>
+<form hx-post='/download?id={{.ID}}' hx-indicator="#spinner" class='p-3 rounded-md gap-3 flex gap-3 h-auto items-center'>
   <select name='quality' id='qual' class='border rounded-md text-black'>
     {{ range $val := .VidQuality }}
     <option value="{{$val}}">{{$val}}</option>
@@ -172,77 +172,78 @@
     <label for="audioOnly">Audio Only</label>
   </div>
   <button type='submit'
-    class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+    class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
     Download
-    <svg id="spinner" class="htmx-indicator" width="24" height="24" viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg">
-      <style>
-        .spinner_Wezc {
-          transform-origin: center;
-          animation: spinner_Oiah .75s step-end infinite
-        }
-
-        @keyframes spinner_Oiah {
-          8.3% {
-            transform: rotate(30deg)
-          }
-
-          16.6% {
-            transform: rotate(60deg)
-          }
-
-          25% {
-            transform: rotate(90deg)
-          }
-
-          33.3% {
-            transform: rotate(120deg)
-          }
-
-          41.6% {
-            transform: rotate(150deg)
-          }
-
-          50% {
-            transform: rotate(180deg)
-          }
-
-          58.3% {
-            transform: rotate(210deg)
-          }
-
-          66.6% {
-            transform: rotate(240deg)
-          }
-
-          75% {
-            transform: rotate(270deg)
-          }
-
-          83.3% {
-            transform: rotate(300deg)
-          }
-
-          91.6% {
-            transform: rotate(330deg)
-          }
-
-          100% {
-            transform: rotate(360deg)
-          }
-        }
-      </style>
-      <g class="spinner_Wezc">
-        <circle cx="12" cy="2.5" r="1.5" opacity=".14" />
-        <circle cx="16.75" cy="3.77" r="1.5" opacity=".29" />
-        <circle cx="20.23" cy="7.25" r="1.5" opacity=".43" />
-        <circle cx="21.50" cy="12.00" r="1.5" opacity=".57" />
-        <circle cx="20.23" cy="16.75" r="1.5" opacity=".71" />
-        <circle cx="16.75" cy="20.23" r="1.5" opacity=".86" />
-        <circle cx="12" cy="21.5" r="1.5" />
-      </g>
-    </svg>
+   
   </button>
+  <svg id="spinner" class="htmx-indicator" width="24" height="24" viewBox="0 0 24 24"
+  xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .spinner_Wezc {
+      transform-origin: center;
+      animation: spinner_Oiah .75s step-end infinite
+    }
+
+    @keyframes spinner_Oiah {
+      8.3% {
+        transform: rotate(30deg)
+      }
+
+      16.6% {
+        transform: rotate(60deg)
+      }
+
+      25% {
+        transform: rotate(90deg)
+      }
+
+      33.3% {
+        transform: rotate(120deg)
+      }
+
+      41.6% {
+        transform: rotate(150deg)
+      }
+
+      50% {
+        transform: rotate(180deg)
+      }
+
+      58.3% {
+        transform: rotate(210deg)
+      }
+
+      66.6% {
+        transform: rotate(240deg)
+      }
+
+      75% {
+        transform: rotate(270deg)
+      }
+
+      83.3% {
+        transform: rotate(300deg)
+      }
+
+      91.6% {
+        transform: rotate(330deg)
+      }
+
+      100% {
+        transform: rotate(360deg)
+      }
+    }
+  </style>
+  <g class="spinner_Wezc">
+    <circle cx="12" cy="2.5" r="1.5" opacity=".14" />
+    <circle cx="16.75" cy="3.77" r="1.5" opacity=".29" />
+    <circle cx="20.23" cy="7.25" r="1.5" opacity=".43" />
+    <circle cx="21.50" cy="12.00" r="1.5" opacity=".57" />
+    <circle cx="20.23" cy="16.75" r="1.5" opacity=".71" />
+    <circle cx="16.75" cy="20.23" r="1.5" opacity=".86" />
+    <circle cx="12" cy="21.5" r="1.5" />
+  </g>
+</svg>
 </form>
 {{ end }}
 
