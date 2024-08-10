@@ -9,46 +9,113 @@
   <script src="https://unpkg.com/htmx.org@1.9.12"
     integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous">
     </script>
+  <style>
+    .collapsible {
+      cursor: pointer;
+      padding: 10px;
+      width: 100%;
+      text-align: left;
+      outline: none;
+      font-size: 1.25rem;
+      color: #22D3EE;
+    }
+    .content {
+      padding: 0 18px;
+      display: none;
+      overflow: scroll;
+      max-height: fit-content;
+      max-width: min-content;
+      z-index: 10;
+      transition: max-height 0.2s ease-out;
+    }
+  </style>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      var coll = document.getElementsByClassName("collapsible");
+      for (var element of coll) {
+        element.addEventListener("click", function () {
+          this.classList.toggle("active");
+          var content = this.nextElementSibling;
+          if (content.style.display === "block") {
+            content.style.display = "none";
+          } else {
+            content.style.display = "block";
+          }
+        });
+      }
+    });
+  </script>
 </head>
 <script defer src="https://cdn.tailwindcss.com"></script>
 
 <body class="bg-[#1d1d1d]">
-  <div class="flex mt-5 p-3">
-    <a href="/"
-      class="flex-none w-1/7 bg-[#1d1d1d] border border-[#2272FF] rounded-xl p-3 hover:bg-blue-700 text-[#2272FF] hover:text-white font-bold">
-      Home</a>
-    <h1 class="flex-initial w-full text-center text-white text-3xl">
-      Player
-    </h1>
-  </div>
-
-  <div class="flex p-5 gap-3 max-h-screen text-white justify-center min-h-[80px]">
-    <div id="list" class="w-1/4 rounded-xl h-auto p-5 flex gap-5 flex-col ">
-      <p class="pl-2 hover:underline hover:underline-offset-4 text-2xl text-[#22D3EE]">Audio Files</p>
-      <details class="overflow-y-auto overflow-x-hidden">
-        <div class="flex flex-col gap-3">
-          {{range .Data}} {{if .IsAudio}}
-          <button hx-get="/play?title={{.Title}}" hx-swap="innerHTML" hx-target="#player"
-            class="hover:underline hover:underline-offset-2 hover:text-green-300 border border-blue-500 rounded-xl p-1">
-            {{.Title}}
-          </button>
-          {{end}} {{end}}
+  <div class="min-w-full min-h-full flex">
+    <div
+      class="flex flex-col gap-5 items-center justify-center border-blue-500 border-l-2 rounded-xl h-[100vh] w-20">
+      <a href="/" class="flex-none font-bold">
+        <svg width="40px" height="40px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd"
+            d="M4.18753 11.3788C4.03002 11.759 4 11.9533 4 12V20.0018C4 20.5529 4.44652 21 5 21H8V15C8 13.8954 8.89543 13 10 13H14C15.1046 13 16 13.8954 16 15V21H19C19.5535 21 20 20.5529 20 20.0018V12C20 11.9533 19.97 11.759 19.8125 11.3788C19.6662 11.0256 19.4443 10.5926 19.1547 10.1025C18.5764 9.1238 17.765 7.97999 16.8568 6.89018C15.9465 5.79788 14.9639 4.78969 14.0502 4.06454C13.5935 3.70204 13.1736 3.42608 12.8055 3.2444C12.429 3.05862 12.1641 3 12 3C11.8359 3 11.571 3.05862 11.1945 3.2444C10.8264 3.42608 10.4065 3.70204 9.94978 4.06454C9.03609 4.78969 8.05348 5.79788 7.14322 6.89018C6.23505 7.97999 5.42361 9.1238 4.8453 10.1025C4.55568 10.5926 4.33385 11.0256 4.18753 11.3788ZM10.3094 1.45091C10.8353 1.19138 11.4141 1 12 1C12.5859 1 13.1647 1.19138 13.6906 1.45091C14.2248 1.71454 14.7659 2.07921 15.2935 2.49796C16.3486 3.33531 17.4285 4.45212 18.3932 5.60982C19.3601 6.77001 20.2361 8.0012 20.8766 9.08502C21.1963 9.62614 21.4667 10.1462 21.6602 10.6134C21.8425 11.0535 22 11.5467 22 12V20.0018C22 21.6599 20.6557 23 19 23H16C14.8954 23 14 22.1046 14 21V15H10V21C10 22.1046 9.10457 23 8 23H5C3.34434 23 2 21.6599 2 20.0018V12C2 11.5467 2.15748 11.0535 2.33982 10.6134C2.53334 10.1462 2.80369 9.62614 3.12345 9.08502C3.76389 8.0012 4.63995 6.77001 5.60678 5.60982C6.57152 4.45212 7.65141 3.33531 8.70647 2.49796C9.2341 2.07921 9.77521 1.71454 10.3094 1.45091Z"
+            fill="#FFF" />
+        </svg>
+      </a>
+      <div id="list" class="rounded-xl h-auto flex gap-5 flex-col ">
+        <button class="collapsible">
+          <svg width="50px" height="50px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M2.38351 13.793C1.93748 10.6294 1.71447 9.04765 2.66232 8.02383C3.61017 7 5.29758 7 8.67239 7H15.3276C18.7024 7 20.3898 7 21.3377 8.02383C22.2855 9.04765 22.0625 10.6294 21.6165 13.793L21.1935 16.793C20.8437 19.2739 20.6689 20.5143 19.7717 21.2572C18.8745 22 17.5512 22 14.9046 22H9.09536C6.44881 22 5.12553 22 4.22834 21.2572C3.33115 20.5143 3.15626 19.2739 2.80648 16.793L2.38351 13.793Z"
+              stroke="#FFF" stroke-width="1.5" />
+            <path
+              d="M12 17C12 17.8284 11.3284 18.5 10.5 18.5C9.67157 18.5 9 17.8284 9 17C9 16.1716 9.67157 15.5 10.5 15.5C11.3284 15.5 12 16.1716 12 17ZM12 17V10.5C12 12.1569 13.8954 13.5 15 13.5"
+              stroke="#FFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            <path d="M19.5617 7C19.7904 5.69523 18.7863 4.5 17.4617 4.5H6.53788C5.21323 4.5 4.20922 5.69523 4.43784 7"
+              stroke="#FFF" stroke-width="1.5" />
+            <path
+              d="M17.4999 4.5C17.5283 4.24092 17.5425 4.11135 17.5427 4.00435C17.545 2.98072 16.7739 2.12064 15.7561 2.01142C15.6497 2 15.5194 2 15.2588 2H8.74099C8.48035 2 8.35002 2 8.24362 2.01142C7.22584 2.12064 6.45481 2.98072 6.45704 4.00434C6.45727 4.11135 6.47146 4.2409 6.49983 4.5"
+              stroke="#FFF" stroke-width="1.5" />
+          </svg>
+        </button>
+        <div class="content absolute border-2 rounded-xl bg-transparent text-white left-20 top-25 backdrop-blur-sm hover:backdrop-blur-lg">
+          <div class="flex flex-col gap-3 max-h-[50vh]">
+            {{range .Data}} {{if .IsAudio}}
+            <button hx-get="/play?title={{.Title}}" hx-swap="innerHTML" hx-target="#player"
+              class="hover:underline hover:underline-offset-2 hover:text-green-300 p-1">
+              {{.Title}}
+            </button>
+            {{end}} {{end}}
+          </div>
         </div>
-      </details>
-      <p class="pl-2 hover:underline hover:underline-offset-4 text-2xl text-[#22D3EE]">Video Files</p>
-      <details class="overflow-y-auto">
-        <div class="max-h-[39vh] flex flex-col gap-3">
-          {{range .Data}} {{if .IsAudio}}{{else}}
-          <button hx-get="/play?title={{.Title}}" hx-swap="innerHTML" hx-target="#player"
-            class="hover:underline hover:underline-offset-2 hover:text-green-300 border border-blue-500 rounded-xl p-1">
-            {{.Title}}
-          </button>
-          {{end}} {{end}}
+        <button class="collapsible"> <svg width="50px" height="50px" viewBox="0 0 24 24" fill="none"
+            xmlns="http://www.w3.org/2000/svg">
+            <path d="M19.5617 7C19.7904 5.69523 18.7863 4.5 17.4617 4.5H6.53788C5.21323 4.5 4.20922 5.69523 4.43784 7"
+              stroke="#FFF" stroke-width="1.5" />
+            <path
+              d="M17.4999 4.5C17.5283 4.24092 17.5425 4.11135 17.5427 4.00435C17.545 2.98072 16.7739 2.12064 15.7561 2.01142C15.6497 2 15.5194 2 15.2588 2H8.74099C8.48035 2 8.35002 2 8.24362 2.01142C7.22584 2.12064 6.45481 2.98072 6.45704 4.00434C6.45727 4.11135 6.47146 4.2409 6.49983 4.5"
+              stroke="#FFF" stroke-width="1.5" />
+            <path
+              d="M14.5812 13.6159C15.1396 13.9621 15.1396 14.8582 14.5812 15.2044L11.2096 17.2945C10.6669 17.6309 10 17.1931 10 16.5003L10 12.32C10 11.6273 10.6669 11.1894 11.2096 11.5258L14.5812 13.6159Z"
+              stroke="#FFF" stroke-width="1.5" />
+            <path
+              d="M2.38351 13.793C1.93748 10.6294 1.71447 9.04765 2.66232 8.02383C3.61017 7 5.29758 7 8.67239 7H15.3276C18.7024 7 20.3898 7 21.3377 8.02383C22.2855 9.04765 22.0625 10.6294 21.6165 13.793L21.1935 16.793C20.8437 19.2739 20.6689 20.5143 19.7717 21.2572C18.8745 22 17.5512 22 14.9046 22H9.09536C6.44881 22 5.12553 22 4.22834 21.2572C3.33115 20.5143 3.15626 19.2739 2.80648 16.793L2.38351 13.793Z"
+              stroke="#FFF" stroke-width="1.5" />
+          </svg></button>
+        <div class="content absolute border-2 rounded-xl bg-transparent text-white left-20 top-25 backdrop-blur-sm hover:backdrop-blur-lg">
+          <div class="max-h-[90vh] flex flex-col gap-3">
+            {{range .Data}} {{if .IsAudio}}{{else}}
+            <button hx-get="/play?title={{.Title}}" hx-swap="innerHTML" hx-target="#player"
+              class="hover:underline hover:underline-offset-2 hover:text-green-300">
+              {{.Title}}
+            </button>
+            {{end}} {{end}}
+          </div>
         </div>
-      </details>
+      </div>
     </div>
-    <div id="player" class="p-5 w-full rounded-xl h-full">
-      <p class="text-[#22D3EE]">Your Audio/Video Player Goes here</p>
+
+    <div class="flex p-5 gap-3 max-h-screen justify-center min-h-[90vh] w-full items-center justify-center">
+      <div id="player" class="p-5 w-full rounded-xl h-full">
+        <p class="text-[#22D3EE]">Your Audio/Video Player Goes here</p>
+      </div>
     </div>
   </div>
 </body>
@@ -64,7 +131,9 @@
   </audio>
   <p class="text-[#F97316]">{{.Data.Title}}</p>
 </div>
-{{end}} {{block "video" . }}
+{{end}}
+
+{{block "video" . }}
 <div class="flex flex-col gap-5 text-center justify-center items-center">
   <video controls class="h-full w-full rounded-xl shadow-[0_10px_20px_rgba(240,_46,_170,_0.7)]" id="vplay">
     <source src="{{.Data.Path}}" type="{{.Data.Type}}" />
