@@ -6,19 +6,10 @@ import (
 
 type Service struct {
 	YtClient YtClient
-	Status   map[string]string
 }
 
 func New(y YtClient) *Service {
-	return &Service{
-		YtClient: y,
-		Status:   make(map[string]string, 0),
-	}
-}
-
-// GetStatus get the download status of the video by ID
-func (s *Service) GetStatus(videoID string) string {
-	return s.Status[videoID]
+	return &Service{YtClient: y}
 }
 
 func (s *Service) GetInfo(url string) ([]models.Video, error) {
@@ -38,25 +29,17 @@ func (s *Service) DownloadInfo(videoID string) ([]string, error) {
 }
 
 func (s *Service) Download(id, qual, audioOnly string) error {
-	s.Status[id] = "download started"
-
 	switch audioOnly {
 	case "":
 		if err := s.YtClient.DownloadVideo(id, qual); err != nil {
-			s.Status[id] = err.Error()
-
 			return err
 		}
 
 	case "true":
 		if err := s.YtClient.DownloadAudio(id); err != nil {
-			s.Status[id] = err.Error()
-
 			return err
 		}
 	}
-
-	s.Status[id] = "download complete !!"
 
 	return nil
 }

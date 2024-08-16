@@ -61,14 +61,6 @@ func (h *Handler) Play(c echo.Context) error {
 	return nil
 }
 
-// Status returns the download status of a video
-func (h *Handler) Status(c echo.Context) error {
-	vID := c.QueryParam("vid")
-	status := h.service.GetStatus(vID)
-
-	return c.String(http.StatusOK, status)
-}
-
 // GetInfo retrives the information about the url provided.
 func (h *Handler) GetInfo(c echo.Context) error {
 	url := c.FormValue("URL")

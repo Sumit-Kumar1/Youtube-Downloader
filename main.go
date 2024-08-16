@@ -42,7 +42,6 @@ func main() {
 	e.GET("/player", h.PagePlayer)
 	e.GET("/play", h.Play)
 
-	e.GET("/status", h.Status)
 	e.GET("/info", h.DownloadInfo)
 	e.GET("/metrics", echoprometheus.NewHandler())
 
