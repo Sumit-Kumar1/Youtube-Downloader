@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"io"
+	"time"
+)
 
 type Video struct {
 	ID        string
@@ -22,4 +25,9 @@ type Image struct {
 	URL    string
 	Width  uint
 	Height uint
+}
+
+type ClientResponse struct {
+	Stream   io.ReadCloser
+	Filename string
 }

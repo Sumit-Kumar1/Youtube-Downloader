@@ -29,6 +29,9 @@ Steps to run the project (makefile)
 - [x] Audio Download:
   - Provide an option to download audio instead of video
 
+- [ ] Client side Downloading:
+  - Provide an option to download audio instead of video
+
 - [ ] Audio Download, music info in downloaded audios e.g. Thumbnail, track info etc.
 
 - [ ] Subtitles Download:
@@ -51,9 +54,10 @@ Steps to run the project (makefile)
   - Allow users to download entire playlists
   - Use the YouTube Data API to retrieve the list of videos in the playlist
   
-- [ ] Pagination For Playlist: (WIP)
-  - Test URL : [The Biggest playlist](https://www.youtube.com/playlist?list=PLXFwTY00FRUUZzL_Vjhy-bE8WIao3eyOi)
-  - Add the pagination support for playlist to load faster
+- [ ] Pagination For Playlist:
+  - WIP :(Seems like can't do with `kkdai` library. The whole playlist is fetched at once in library)
+      - Test URL : [The Biggest playlist](https://www.youtube.com/playlist?list=PLXFwTY00FRUUZzL_Vjhy-bE8WIao3eyOi)
+      - Add the pagination support for playlist to load faster
 
 - [ ] Database Storage:
   - Store downloaded videos and metadata in a database

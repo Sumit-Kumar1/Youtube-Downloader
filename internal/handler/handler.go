@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"ytdl_http/internal/models"
@@ -91,13 +92,20 @@ func (h *Handler) Download(c echo.Context) error {
 	id := c.FormValue("id")
 	audioOnly := c.FormValue("audioOnly")
 
-	if err := h.service.Download(id, qual, audioOnly); err != nil {
+	resp, err := h.service.Download(id, qual, audioOnly)
+	if err != nil {
 		c.Logger().Errorf("Download err: %s", err.Error())
 
 		return err
 	}
 
-	return c.Render(http.StatusOK, "status", map[string]any{"ID": id})
+	defer resp.Stream.Close()
+
+	c.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", resp.Filename))
+	c.Response().Header().Set("Content-Type", "application/octet-stream")
+	c.Response().WriteHeader(http.StatusOK)
+
+	return c.Stream(http.StatusOK, "application/octet-stream", resp.Stream)
 }
 
 func (h *Handler) DownloadInfo(c echo.Context) error {
@@ -112,4 +120,24 @@ func (h *Handler) DownloadInfo(c echo.Context) error {
 		"ID":         videoID,
 		"VidQuality": qualities,
 	})
+}
+
+func (h *Handler) DownloadAudio(c echo.Context) error {
+	// qual := c.FormValue("quality")
+	id := c.FormValue("id")
+
+	resp, err := h.service.Download(id, "", "true")
+	if err != nil {
+		c.Logger().Errorf("Download err: %s", err.Error())
+
+		return err
+	}
+
+	defer resp.Stream.Close()
+
+	c.Response().Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%s", resp.Filename))
+	c.Response().Header().Set("Content-Type", "application/octet-stream")
+	c.Response().WriteHeader(http.StatusOK)
+
+	return c.Stream(http.StatusOK, "application/octet-stream", resp.Stream)
 }

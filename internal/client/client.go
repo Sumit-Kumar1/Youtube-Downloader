@@ -2,20 +2,17 @@ package client
 
 import (
 	"context"
-	"io"
-	"os"
-
 	"ytdl_http/internal/models"
 
-	dlr "github.com/kkdai/youtube/v2/downloader"
+	"github.com/kkdai/youtube/v2"
 )
 
 type Client struct {
-	Ytdl *dlr.Downloader
+	Ytdl *youtube.Client
 }
 
-func New(d *dlr.Downloader) Client {
-	return Client{Ytdl: d}
+func New() Client {
+	return Client{Ytdl: &youtube.Client{}}
 }
 
 func (c Client) GetVideo(url string) (*models.Video, error) {
@@ -81,60 +78,53 @@ func (c Client) GetDownloadInfo(videoID string) ([]string, error) {
 		return nil, err
 	}
 
-	qls := make([]string, 0, len(vid.Formats))
-	for i := range vid.Formats {
-		if vid.Formats[i].QualityLabel != "" {
-			qls = append(qls, vid.Formats[i].QualityLabel)
+	fl := vid.Formats
+
+	qls := make([]string, 0, len(fl))
+	for i := range fl {
+		if fl[i].QualityLabel == "" {
+			continue
 		}
+
+		qls = append(qls, fl[i].QualityLabel)
 	}
 
 	return qls, nil
 }
 
-func (c Client) DownloadVideo(id, qual string) error {
+func (c Client) DownloadVideo(id, quality string) (*models.ClientResponse, error) {
 	vid, err := c.Ytdl.GetVideo(id)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	title := formatName(vid.Title)
-	if err := c.Ytdl.DownloadComposite(context.Background(), title+".mp4", vid, qual, "", ""); err != nil {
-		return err
+	name := formatName(vid.Title) + ".mp4"
+	formats := vid.Formats.Quality(quality)
+
+	stream, _, err := c.Ytdl.GetStream(vid, &formats[0])
+	if err != nil {
+		return nil, err
 	}
 
-	return nil
+	return &models.ClientResponse{Stream: stream, Filename: name}, nil
 }
 
-func (c Client) DownloadAudio(id string) error {
+func (c Client) DownloadAudio(id string) (*models.ClientResponse, error) {
 	ctx := context.Background()
 	vid, err := c.Ytdl.GetVideoContext(ctx, id)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	title := formatName(vid.Title)
-
-	outFile, err := os.Create("./Downloads/" + title + ".m4a")
-	if err != nil {
-		return err
-	}
+	title := formatName(vid.Title) + ".m4a"
 
 	audioFormats := vid.Formats.Type("audio")
 	audioFormats.Sort()
 
 	stream, _, err := c.Ytdl.GetStreamContext(ctx, vid, &audioFormats[0])
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	_, err = io.Copy(outFile, stream)
-	if err != nil {
-		return err
-	}
-
-	if err := outFile.Sync(); err != nil {
-		return err
-	}
-
-	return nil
+	return &models.ClientResponse{Stream: stream, Filename: title}, nil
 }

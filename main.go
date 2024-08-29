@@ -2,7 +2,6 @@ package main
 
 import (
 	"net/http"
-	"os"
 	"time"
 
 	"ytdl_http/internal/client"
@@ -15,8 +14,6 @@ import (
 	"github.com/labstack/echo-contrib/echoprometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-
-	dlr "github.com/kkdai/youtube/v2/downloader"
 )
 
 func main() {
@@ -25,16 +22,7 @@ func main() {
 
 	e.Renderer = t
 
-	dirPath := "./Downloads/"
-	if _, err := os.Stat(dirPath); os.IsNotExist(err) {
-		if err := os.Mkdir(dirPath, 0755); err != nil {
-			e.Logger.Errorf("error while creating the directory: %s", err.Error())
-
-			return
-		}
-	}
-
-	h := initServices(dirPath)
+	h := initServices()
 
 	addMiddleWares(e)
 
@@ -47,15 +35,15 @@ func main() {
 	e.GET("/metrics", echoprometheus.NewHandler())
 
 	e.POST("/getInfo", h.GetInfo)
-	e.POST("/download", h.Download)
+	e.GET("/download/video", h.Download)
+	e.GET("/download/audio", h.DownloadAudio)
 	e.GET("/resource/*", echo.WrapHandler(http.StripPrefix("/resource/", http.FileServer(http.Dir("./Downloads")))))
 
 	e.Logger.Fatal(e.Start(":12344"))
 }
 
-func initServices(dir string) *handler.Handler {
-	d := &dlr.Downloader{OutputDir: dir}
-	ytCl := client.New(d)
+func initServices() *handler.Handler {
+	ytCl := client.New()
 	s := service.New(ytCl)
 
 	return handler.New(s)

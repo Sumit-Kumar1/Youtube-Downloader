@@ -5,6 +5,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="youtube downloader">
   <title>Youtube Downloader</title>
   <script src="https://unpkg.com/htmx.org@1.9.12"
     integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2"
@@ -132,7 +133,7 @@
     <div class="flex flex-col justify-center">
       <p class='text-xl font-bold'>Title: {{.Title}}</p>
       <p>Author Name: <span class='text-green-300'>{{.Author}}</span></p>
-      <p>Duration: <span class='text-green-300'>{{.Duration}}<span></p>
+      <p>Duration: <span class='text-green-300'>{{.Duration}}</span></p>
       <div>
         <button hx-get="/info?id={{.ID}}&title={{.Title}}" hx-swap="outerHTML"
           class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
@@ -156,13 +157,78 @@
 <div class="flex flex-col justify-center">
   <p class='text-xl font-bold'>Title: {{.Title}}</p>
   <p>Author Name: <span class='text-green-300'>{{.Author}}</span></p>
-  <p>Duration: <span class='text-green-300'>{{.Duration}}<span></p>
+  <p>Duration: <span class='text-green-300'>{{.Duration}}</span></p>
 </div>
 {{ end }}
 
 {{ block "downloadInfo" . }}
-<form hx-post='/download?id={{.ID}}' hx-indicator="#spinner"
-  class='p-3 rounded-md gap-3 flex gap-3 h-auto items-center'>
+<script>
+  async function handleSubmit(event) {
+    event.preventDefault();
+    const formData = new FormData(event.target); // Get form values
+    const params = new URLSearchParams(formData).toString(); // Convert to query string
+       // Create MediaSource for video and audio
+       const videoMediaSource = new MediaSource();
+    const audioMediaSource = new MediaSource();
+
+    // Create video and audio elements
+    const videoElement = document.createElement('video');
+    const audioElement = document.createElement('audio');
+
+    videoElement.src = URL.createObjectURL(videoMediaSource);
+    audioElement.src = URL.createObjectURL(audioMediaSource);
+
+    // Append video and audio elements to the body (or any container)
+    document.body.appendChild(videoElement);
+    document.body.appendChild(audioElement);
+
+    // Fetch video and audio streams
+    const videoResponse = await fetch(`/download/video?${params}&id={{.ID}}`);
+    const audioResponse = await fetch(`/download/audio?id={{.ID}}`);
+
+    // Handle video stream
+    videoMediaSource.addEventListener('sourceopen', async () => {
+      const videoSourceBuffer = videoMediaSource.addSourceBuffer('video/webm; codecs="vp8"');
+      const videoReader = videoResponse.body.getReader();
+
+      // Read video stream
+      async function readVideo() {
+        const { done, value } = await videoReader.read();
+        if (done) {
+          videoMediaSource.endOfStream();
+          return;
+        }
+        videoSourceBuffer.appendBuffer(value);
+        readVideo();
+      }
+      readVideo();
+    });
+
+    // Handle audio stream
+    audioMediaSource.addEventListener('sourceopen', async () => {
+      const audioSourceBuffer = audioMediaSource.addSourceBuffer('audio/webm; codecs="opus"');
+      const audioReader = audioResponse.body.getReader();
+
+      // Read audio stream
+      async function readAudio() {
+        const { done, value } = await audioReader.read();
+        if (done) {
+          audioMediaSource.endOfStream();
+          return;
+        }
+        audioSourceBuffer.appendBuffer(value);
+        readAudio();
+      }
+      readAudio();
+    });
+
+    // Play the video and audio together
+    videoElement.play();
+    audioElement.play();
+  }
+</script>
+
+<form class='p-3 rounded-md gap-3 flex gap-3 h-auto items-center' onsubmit="handleSubmit(event)">
   <select name='quality' id='qual' class='border rounded-md text-black'>
     {{ range $val := .VidQuality }}
     <option value="{{$val}}">{{$val}}</option>
@@ -175,7 +241,6 @@
   <button type='submit'
     class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
     Download
-
   </button>
   <svg id="spinner" class="htmx-indicator" width="24" height="24" viewBox="0 0 24 24"
     xmlns="http://www.w3.org/2000/svg">

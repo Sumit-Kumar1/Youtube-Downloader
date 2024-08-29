@@ -12,7 +12,7 @@ type Service struct {
 func New(y YtClient) *Service {
 	return &Service{
 		YtClient: y,
-		Status:   make(map[string]string, 0),
+		Status:   make(map[string]string),
 	}
 }
 
@@ -37,28 +37,12 @@ func (s *Service) DownloadInfo(videoID string) ([]string, error) {
 	return s.YtClient.GetDownloadInfo(videoID)
 }
 
-func (s *Service) Download(id, qual, audioOnly string) error {
-	s.Status[id] = "download started"
-
-	switch audioOnly {
-	case "":
-		if err := s.YtClient.DownloadVideo(id, qual); err != nil {
-			s.Status[id] = err.Error()
-
-			return err
-		}
-
-	case "true":
-		if err := s.YtClient.DownloadAudio(id); err != nil {
-			s.Status[id] = err.Error()
-
-			return err
-		}
+func (s *Service) Download(id, quality, audioOnly string) (*models.ClientResponse, error) {
+	if audioOnly == "true" {
+		return s.YtClient.DownloadAudio(id)
 	}
 
-	s.Status[id] = "download complete !!"
-
-	return nil
+	return s.YtClient.DownloadVideo(id, quality)
 }
 
 func (s *Service) getPlaylistData(url string) ([]models.Video, error) {
