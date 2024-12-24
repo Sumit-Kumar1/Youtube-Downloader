@@ -5,6 +5,7 @@ go 1.23
 toolchain go1.23.4
 
 require (
+	github.com/golang/mock v1.6.0
 	github.com/kkdai/youtube/v2 v2.10.2
 	github.com/labstack/echo-contrib v0.17.2
 	github.com/labstack/echo/v4 v4.13.3
@@ -23,6 +24,7 @@ require (
 	github.com/dop251/goja v0.0.0-20241024094426-79f3a7efcdbd // indirect
 	github.com/go-sourcemap/sourcemap v2.1.4+incompatible // indirect
 	github.com/google/pprof v0.0.0-20241210010833-40e02aabc2ad // indirect
+	github.com/google/uuid v1.6.0
 	github.com/klauspost/compress v1.17.11 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/labstack/gommon v0.4.2 // indirect
