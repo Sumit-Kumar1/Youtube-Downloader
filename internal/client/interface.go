@@ -2,8 +2,9 @@ package client
 
 import (
 	"context"
-	"github.com/kkdai/youtube/v2"
 	"io"
+
+	"github.com/kkdai/youtube/v2"
 )
 
 type Ytdlr interface {

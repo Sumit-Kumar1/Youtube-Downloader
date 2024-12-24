@@ -15,8 +15,6 @@ import (
 	"github.com/labstack/echo-contrib/echoprometheus"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-
-	dlr "github.com/kkdai/youtube/v2/downloader"
 )
 
 func main() {
@@ -25,16 +23,15 @@ func main() {
 
 	e.Renderer = t
 
-	dirPath := "./Downloads/"
-	if _, err := os.Stat(dirPath); os.IsNotExist(err) {
-		if err := os.Mkdir(dirPath, 0755); err != nil {
+	if _, err := os.Stat(models.DirPath); os.IsNotExist(err) {
+		if err := os.Mkdir(models.DirPath, 0755); err != nil {
 			e.Logger.Errorf("error while creating the directory: %s", err.Error())
 
 			return
 		}
 	}
 
-	h := initServices(dirPath)
+	h := initServices()
 
 	addMiddleWares(e)
 
@@ -52,9 +49,8 @@ func main() {
 	e.Logger.Fatal(e.Start(":12344"))
 }
 
-func initServices(dir string) *handler.Handler {
-	d := &dlr.Downloader{OutputDir: dir}
-	ytCl := client.New(d)
+func initServices() *handler.Handler {
+	ytCl := client.New()
 	s := service.New(ytCl)
 
 	return handler.New(s)

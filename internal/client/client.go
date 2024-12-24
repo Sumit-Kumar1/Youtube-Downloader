@@ -13,8 +13,10 @@ type Client struct {
 	Ytdl Ytdlr
 }
 
-func New(d *dlr.Downloader) Client {
-	return Client{Ytdl: d}
+func New() Client {
+	d := dlr.Downloader{OutputDir: models.DirPath}
+
+	return Client{Ytdl: &d}
 }
 
 func (c Client) GetVideo(url string) (*models.Video, error) {
