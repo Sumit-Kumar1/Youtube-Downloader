@@ -4,14 +4,13 @@ import (
 	"context"
 	"io"
 	"os"
-
 	"ytdl_http/internal/models"
 
 	dlr "github.com/kkdai/youtube/v2/downloader"
 )
 
 type Client struct {
-	Ytdl *dlr.Downloader
+	Ytdl Ytdlr
 }
 
 func New(d *dlr.Downloader) Client {
