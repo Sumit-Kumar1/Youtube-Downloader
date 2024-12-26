@@ -31,7 +31,7 @@ func main() {
 		}
 	}
 
-	h := initServices()
+	h := setupDeps()
 
 	addMiddleWares(e)
 
@@ -45,11 +45,12 @@ func main() {
 	e.POST("/getInfo", h.GetInfo)
 	e.POST("/download", h.Download)
 	e.GET("/resource/*", echo.WrapHandler(http.StripPrefix("/resource/", http.FileServer(http.Dir("./Downloads")))))
+	e.GET("/assets/*", echo.WrapHandler(http.StripPrefix("/assets/", http.FileServer(http.Dir("assets")))))
 
 	e.Logger.Fatal(e.Start(":12344"))
 }
 
-func initServices() *handler.Handler {
+func setupDeps() *handler.Handler {
 	ytCl := client.New()
 	s := service.New(ytCl)
 
