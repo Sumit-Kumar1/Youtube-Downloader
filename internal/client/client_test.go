@@ -54,7 +54,7 @@ func TestClient_GetVideo(t *testing.T) {
 
 	for i, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := Client{Ytdl: mockYtdlr}
+			c := Client{ytd: mockYtdlr}
 
 			tt.mock()
 
@@ -96,7 +96,7 @@ func TestClient_GetPlaylist(t *testing.T) {
 
 	for i, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := Client{Ytdl: mockYtdlr}
+			c := Client{ytd: mockYtdlr}
 
 			tt.mock()
 

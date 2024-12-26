@@ -10,17 +10,17 @@ import (
 )
 
 type Client struct {
-	Ytdl Ytdlr
+	ytd ytdlr
 }
 
 func New() Client {
 	d := dlr.Downloader{OutputDir: models.DirPath}
 
-	return Client{Ytdl: &d}
+	return Client{ytd: &d}
 }
 
 func (c Client) GetVideo(url string) (*models.Video, error) {
-	ytVid, err := c.Ytdl.GetVideo(url)
+	ytVid, err := c.ytd.GetVideo(url)
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func (c Client) GetVideo(url string) (*models.Video, error) {
 }
 
 func (c Client) GetPlaylist(url string) (*models.Playlist, error) {
-	ytPl, err := c.Ytdl.GetPlaylist(url)
+	ytPl, err := c.ytd.GetPlaylist(url)
 	if err != nil {
 		return nil, err
 	}
@@ -77,7 +77,7 @@ func (c Client) GetPlaylist(url string) (*models.Playlist, error) {
 }
 
 func (c Client) GetDownloadInfo(videoID string) ([]string, error) {
-	vid, err := c.Ytdl.GetVideo(videoID)
+	vid, err := c.ytd.GetVideo(videoID)
 	if err != nil {
 		return nil, err
 	}
@@ -93,13 +93,13 @@ func (c Client) GetDownloadInfo(videoID string) ([]string, error) {
 }
 
 func (c Client) DownloadVideo(id, qual string) error {
-	vid, err := c.Ytdl.GetVideo(id)
+	vid, err := c.ytd.GetVideo(id)
 	if err != nil {
 		return err
 	}
 
 	title := formatName(vid.Title)
-	if err := c.Ytdl.DownloadComposite(context.Background(), title+".mp4", vid, qual, "", ""); err != nil {
+	if err := c.ytd.DownloadComposite(context.Background(), title+".mp4", vid, qual, "", ""); err != nil {
 		return err
 	}
 
@@ -108,7 +108,7 @@ func (c Client) DownloadVideo(id, qual string) error {
 
 func (c Client) DownloadAudio(id string) error {
 	ctx := context.Background()
-	vid, err := c.Ytdl.GetVideoContext(ctx, id)
+	vid, err := c.ytd.GetVideoContext(ctx, id)
 	if err != nil {
 		return err
 	}
@@ -123,7 +123,7 @@ func (c Client) DownloadAudio(id string) error {
 	audioFormats := vid.Formats.Type("audio")
 	audioFormats.Sort()
 
-	stream, _, err := c.Ytdl.GetStreamContext(ctx, vid, &audioFormats[0])
+	stream, _, err := c.ytd.GetStreamContext(ctx, vid, &audioFormats[0])
 	if err != nil {
 		return err
 	}

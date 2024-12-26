@@ -7,7 +7,7 @@ import (
 	"github.com/kkdai/youtube/v2"
 )
 
-type Ytdlr interface {
+type ytdlr interface {
 	GetPlaylist(url string) (*youtube.Playlist, error)
 	GetVideo(url string) (*youtube.Video, error)
 	GetStreamContext(ctx context.Context, video *youtube.Video, format *youtube.Format) (io.ReadCloser, int64, error)
