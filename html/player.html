@@ -6,6 +6,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Player</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+  <link rel="manifest" href="assets/site.webmanifest">
   <script src="https://unpkg.com/htmx.org@1.9.12"
     integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2" crossorigin="anonymous">
     </script>
@@ -19,6 +23,7 @@
       font-size: 1.25rem;
       color: #22D3EE;
     }
+
     .content {
       padding: 0 18px;
       display: none;
@@ -48,10 +53,9 @@
 </head>
 <script defer src="https://cdn.tailwindcss.com"></script>
 
-<body class="bg-[#1d1d1d]">
+<body class="bg-[#212121]">
   <div class="min-w-full min-h-full flex">
-    <div
-      class="flex flex-col gap-5 items-center justify-center border-blue-500 border-l-2 rounded-xl h-[100vh] w-20">
+    <div class="flex flex-col gap-5 items-center justify-center border-blue-500 border-l-2 rounded-xl h-[100vh] w-20">
       <a href="/" class="flex-none font-bold">
         <svg width="40px" height="40px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path fill-rule="evenodd" clip-rule="evenodd"
@@ -75,7 +79,8 @@
               stroke="#FFF" stroke-width="1.5" />
           </svg>
         </button>
-        <div class="content absolute border-2 rounded-xl bg-transparent text-white left-20 top-25 backdrop-blur-sm hover:backdrop-blur-lg">
+        <div
+          class="content absolute border-2 rounded-xl bg-transparent text-white left-20 top-25 backdrop-blur-sm hover:backdrop-blur-lg">
           <div class="flex flex-col gap-3 max-h-[50vh]">
             {{range .Data}} {{if .IsAudio}}
             <button hx-get="/play?title={{.Title}}" hx-swap="innerHTML" hx-target="#player"
@@ -99,7 +104,8 @@
               d="M2.38351 13.793C1.93748 10.6294 1.71447 9.04765 2.66232 8.02383C3.61017 7 5.29758 7 8.67239 7H15.3276C18.7024 7 20.3898 7 21.3377 8.02383C22.2855 9.04765 22.0625 10.6294 21.6165 13.793L21.1935 16.793C20.8437 19.2739 20.6689 20.5143 19.7717 21.2572C18.8745 22 17.5512 22 14.9046 22H9.09536C6.44881 22 5.12553 22 4.22834 21.2572C3.33115 20.5143 3.15626 19.2739 2.80648 16.793L2.38351 13.793Z"
               stroke="#FFF" stroke-width="1.5" />
           </svg></button>
-        <div class="content absolute border-2 rounded-xl bg-transparent text-white left-20 top-25 backdrop-blur-sm hover:backdrop-blur-lg">
+        <div
+          class="content absolute border-2 rounded-xl bg-transparent text-white left-20 top-25 backdrop-blur-sm hover:backdrop-blur-lg">
           <div class="max-h-[90vh] flex flex-col gap-3">
             {{range .Data}} {{if .IsAudio}}{{else}}
             <button hx-get="/play?title={{.Title}}" hx-swap="innerHTML" hx-target="#player"
@@ -114,7 +120,7 @@
 
     <div class="flex p-5 gap-3 max-h-screen justify-center min-h-[90vh] w-full items-center justify-center">
       <div id="player" class="p-5 w-full rounded-xl h-full">
-        <p class="text-[#22D3EE]">Your Audio/Video Player Goes here</p>
+        <p class="text-[#22D3EE]">Hey there!! Play Something From the Awesome downloads you had</p>
       </div>
     </div>
   </div>
