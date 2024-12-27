@@ -114,11 +114,7 @@ func (c Client) DownloadAudio(id string) error {
 	}
 
 	title := formatName(vid.Title)
-
-	outFile, err := os.Create("./Downloads/" + title + ".m4a")
-	if err != nil {
-		return err
-	}
+	fileName := title + ".m4a"
 
 	audioFormats := vid.Formats.Type("audio")
 	audioFormats.Sort()
@@ -128,14 +124,63 @@ func (c Client) DownloadAudio(id string) error {
 		return err
 	}
 
-	_, err = io.Copy(outFile, stream)
+	tempFName, err := writeStreamToTemp(stream, fileName)
 	if err != nil {
 		return err
 	}
 
-	if err := outFile.Sync(); err != nil {
+	defer func() { // closing stream and temp file deletion
+		stream.Close()
+		os.RemoveAll(tempFName)
+	}()
+
+	if err := writeFileToDownload(tempFName, fileName); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func writeFileToDownload(tempFile, fileName string) error {
+	file, err := os.Create(models.DirPath + "/" + fileName)
+	if err != nil {
+		return err
+	}
+
+	defer file.Close()
+
+	data, err := os.ReadFile(tempFile)
+	if err != nil {
+		return err
+	}
+
+	if _, err := file.Write(data); err != nil {
+		return err
+	}
+
+	if err := file.Sync(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func writeStreamToTemp(stream io.ReadCloser, fileName string) (string, error) {
+	tempF, err := os.CreateTemp(os.TempDir(), fileName)
+	if err != nil {
+		return "", err
+	}
+
+	defer tempF.Close()
+
+	_, err = io.Copy(tempF, stream)
+	if err != nil {
+		return "", err
+	}
+
+	if err := tempF.Sync(); err != nil {
+		return "", nil
+	}
+
+	return tempF.Name(), nil
 }
