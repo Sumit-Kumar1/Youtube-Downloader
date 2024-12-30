@@ -51,7 +51,7 @@
 
 
   <div id="dContainer"
-    class="w-full max-h-[83vh] p-4 bg-white rounded-lg shadow-lg dark:bg-[#1d1d1d] overflow-y-scroll overflow-x-hidden border-b-dotted shadow-gray-800">
+    class="w-full max-h-[83vh] p-4 bg-white rounded-lg shadow-lg dark:bg-[#1d1d1d] overflow-y-scroll overflow-x-scroll border-b-dotted shadow-gray-800">
     <svg id="spinner" class="htmx-indicator text-center block" width="40" height="40" viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg">
       <style>
@@ -130,7 +130,7 @@
 <div class='flex flex-col gap-3 p-3 dark:text-white'>
   {{ range .Data}}
   <div
-    class="flex gap-5 hover:dark:bg-gray-700 hover:bg-blue-300 p-5 border-dotted border-2 border-[#1d1d1d] rounded-lg">
+    class="flex md:flex-row sm:flex-col gap-5 hover:dark:bg-gray-700 hover:bg-blue-300 p-5 border-dotted border-2 border-[#1d1d1d] rounded-lg">
     <div class="relative">
       <img src="{{.Thumbnail.URL}}" width="{{.Thumbnail.Width}}" height="{{.Thumbnail.Height}}" alt="vid Thumbnail"
         sizes="(max-width: 340px) 300px,(max-width: 500px) 450px,900px" loading="lazy"
