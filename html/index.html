@@ -5,6 +5,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
+  <link rel="manifest" href="assets/site.webmanifest">
   <title>Youtube Downloader</title>
   <script src="https://unpkg.com/htmx.org@1.9.12"
     integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2"
@@ -26,7 +30,7 @@
 </head>
 <script defer src="https://cdn.tailwindcss.com"></script>
 
-<body class="bg-[#1d1d1d] p-10">
+<body class="dark:bg-[#212121] p-5 bg-[#f8f8f8]">
   <h1 class="text-5xl text-white m-3 text-center">
     Youtube Video Downloader
   </h1>
@@ -47,7 +51,7 @@
 
 
   <div id="dContainer"
-    class="w-full max-h-[83vh] p-4 bg-white rounded-lg shadow-lg dark:bg-[#1d1d1d] overflow-y-scroll shadow-lg border-b-dotted shadow-gray-800">
+    class="w-full max-h-[83vh] p-4 bg-white rounded-lg shadow-lg dark:bg-[#1d1d1d] overflow-y-scroll overflow-x-scroll border-b-dotted shadow-gray-800">
     <svg id="spinner" class="htmx-indicator text-center block" width="40" height="40" viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg">
       <style>
@@ -123,17 +127,21 @@
 {{ end }}
 
 {{ block "info" . }}
-<div class='flex flex-col gap-3 p-3 text-white'>
+<div class='flex flex-col gap-3 p-3 dark:text-white'>
   {{ range .Data}}
-  <div class="flex gap-5 hover:bg-gray-700 p-5 border-dotted border-2 border-[#1d1d1d] rounded-lg">
-    <img src="{{.Thumbnail.URL}}" width="{{.Thumbnail.Width}}" height="{{.Thumbnail.Height}}" alt="vid Thumbnail"
-      sizes="(max-width: 340px) 300px,(max-width: 500px) 450px,900px" loading="lazy"
-      class="object-fill h-auto max-w-sm rounded-lg shadow-none transition-shadow duration-300 ease-in-out hover:shadow-lg hover:shadow-black/30">
-    <div class="flex flex-col justify-center">
-      <p class='text-xl font-bold'>Title: {{.Title}}</p>
-      <p>Author Name: <span class='text-green-300'>{{.Author}}</span></p>
-      <p>Duration: <span class='text-green-300'>{{.Duration}}<span></p>
-      <div>
+  <div
+    class="flex md:flex-row sm:flex-col gap-5 hover:dark:bg-gray-700 hover:bg-blue-300 p-5 border-dotted border-2 border-[#1d1d1d] rounded-lg">
+    <div class="relative">
+      <img src="{{.Thumbnail.URL}}" width="{{.Thumbnail.Width}}" height="{{.Thumbnail.Height}}" alt="vid Thumbnail"
+        sizes="(max-width: 340px) 300px,(max-width: 500px) 450px,900px" loading="lazy"
+        class="object-fill h-auto max-w-sm rounded-lg shadow-none transition-shadow duration-300 ease-in-out hover:shadow-lg hover:shadow-black/30">
+      <p id="durOverlay" class="absolute bottom-2 right-1"><span class='bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded
+          dark:bg-gray-700 dark:text-gray-300'>{{.Duration}}<span></p>
+    </div>
+    <div class="flex flex-col justify-center gap-3">
+      <p class='text-xl font-bold'>{{.Title}}</p>
+      <p><span class='text-green-300'>{{.Author}}</span></p>
+      <div class="mt-5">
         <button hx-get="/info?id={{.ID}}&title={{.Title}}" hx-swap="outerHTML"
           class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
           Get Download Info</button>
@@ -151,18 +159,21 @@
 {{ end }}
 
 {{ block "vidInf" . }}
-<img src="{{.Thumbnail.Src}}" width="{{.Thumbnail.Width}}" height="{{.Thumbnail.Height}}" alt="vid Thumbnail"
-  class="h-auto max-w-sm rounded-lg shadow-none transition-shadow duration-300 ease-in-out hover:shadow-lg hover:shadow-black/30" />
+<div class="relative">
+  <img src="{{.Thumbnail.Src}}" width="{{.Thumbnail.Width}}" height="{{.Thumbnail.Height}}" alt="vid Thumbnail"
+    class="h-auto max-w-sm rounded-lg shadow-none transition-shadow duration-300 ease-in-out hover:shadow-lg hover:shadow-black/30" />
+  <p id="durOverlay" class="absolute bottom-2 right-1"><span class='bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded
+                dark:bg-gray-700 dark:text-gray-300'>{{.Duration}}<span></p>
+</div>
 <div class="flex flex-col justify-center">
-  <p class='text-xl font-bold'>Title: {{.Title}}</p>
-  <p>Author Name: <span class='text-green-300'>{{.Author}}</span></p>
-  <p>Duration: <span class='text-green-300'>{{.Duration}}<span></p>
+  <p class='text-xl font-bold'>{{.Title}}</p>
+  <p><span class='text-green-300'>{{.Author}}</span></p>
 </div>
 {{ end }}
 
 {{ block "downloadInfo" . }}
 <form hx-post='/download?id={{.ID}}' hx-indicator="#spinner"
-  class='p-3 rounded-md gap-3 flex gap-3 h-auto items-center'>
+  class='flex sm:flex-col sm:w-full md:flex-row p-3 rounded-md gap-3 h-auto items-center border-2 justify-center'>
   <select name='quality' id='qual' class='border rounded-md text-black'>
     {{ range $val := .VidQuality }}
     <option value="{{$val}}">{{$val}}</option>

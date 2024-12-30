@@ -4,22 +4,23 @@ import (
 	"context"
 	"io"
 	"os"
-
 	"ytdl_http/internal/models"
 
 	dlr "github.com/kkdai/youtube/v2/downloader"
 )
 
 type Client struct {
-	Ytdl *dlr.Downloader
+	ytd ytdlr
 }
 
-func New(d *dlr.Downloader) Client {
-	return Client{Ytdl: d}
+func New() Client {
+	d := dlr.Downloader{OutputDir: models.DirPath}
+
+	return Client{ytd: &d}
 }
 
 func (c Client) GetVideo(url string) (*models.Video, error) {
-	ytVid, err := c.Ytdl.GetVideo(url)
+	ytVid, err := c.ytd.GetVideo(url)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +41,7 @@ func (c Client) GetVideo(url string) (*models.Video, error) {
 }
 
 func (c Client) GetPlaylist(url string) (*models.Playlist, error) {
-	ytPl, err := c.Ytdl.GetPlaylist(url)
+	ytPl, err := c.ytd.GetPlaylist(url)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +77,7 @@ func (c Client) GetPlaylist(url string) (*models.Playlist, error) {
 }
 
 func (c Client) GetDownloadInfo(videoID string) ([]string, error) {
-	vid, err := c.Ytdl.GetVideo(videoID)
+	vid, err := c.ytd.GetVideo(videoID)
 	if err != nil {
 		return nil, err
 	}
@@ -92,13 +93,13 @@ func (c Client) GetDownloadInfo(videoID string) ([]string, error) {
 }
 
 func (c Client) DownloadVideo(id, qual string) error {
-	vid, err := c.Ytdl.GetVideo(id)
+	vid, err := c.ytd.GetVideo(id)
 	if err != nil {
 		return err
 	}
 
 	title := formatName(vid.Title)
-	if err := c.Ytdl.DownloadComposite(context.Background(), title+".mp4", vid, qual, "", ""); err != nil {
+	if err := c.ytd.DownloadComposite(context.Background(), title+".mp4", vid, qual, "", ""); err != nil {
 		return err
 	}
 
@@ -107,34 +108,79 @@ func (c Client) DownloadVideo(id, qual string) error {
 
 func (c Client) DownloadAudio(id string) error {
 	ctx := context.Background()
-	vid, err := c.Ytdl.GetVideoContext(ctx, id)
+	vid, err := c.ytd.GetVideoContext(ctx, id)
 	if err != nil {
 		return err
 	}
 
 	title := formatName(vid.Title)
-
-	outFile, err := os.Create("./Downloads/" + title + ".m4a")
-	if err != nil {
-		return err
-	}
+	fileName := title + ".m4a"
 
 	audioFormats := vid.Formats.Type("audio")
 	audioFormats.Sort()
 
-	stream, _, err := c.Ytdl.GetStreamContext(ctx, vid, &audioFormats[0])
+	stream, _, err := c.ytd.GetStreamContext(ctx, vid, &audioFormats[0])
 	if err != nil {
 		return err
 	}
 
-	_, err = io.Copy(outFile, stream)
+	tempFName, err := writeStreamToTemp(stream, fileName)
 	if err != nil {
 		return err
 	}
 
-	if err := outFile.Sync(); err != nil {
+	defer func() { // closing stream and temp file deletion
+		stream.Close()
+		os.RemoveAll(tempFName)
+	}()
+
+	if err := writeFileToDownload(tempFName, fileName); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func writeFileToDownload(tempFile, fileName string) error {
+	file, err := os.Create(models.DirPath + "/" + fileName)
+	if err != nil {
+		return err
+	}
+
+	defer file.Close()
+
+	data, err := os.ReadFile(tempFile)
+	if err != nil {
+		return err
+	}
+
+	if _, err := file.Write(data); err != nil {
+		return err
+	}
+
+	if err := file.Sync(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func writeStreamToTemp(stream io.ReadCloser, fileName string) (string, error) {
+	tempF, err := os.CreateTemp(os.TempDir(), fileName)
+	if err != nil {
+		return "", err
+	}
+
+	defer tempF.Close()
+
+	_, err = io.Copy(tempF, stream)
+	if err != nil {
+		return "", err
+	}
+
+	if err := tempF.Sync(); err != nil {
+		return "", nil
+	}
+
+	return tempF.Name(), nil
 }

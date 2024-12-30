@@ -1,6 +1,7 @@
 package models
 
 const (
+	DirPath   = "./Downloads/"
 	m4aExt    = "m4a"
 	mp3Ext    = "mp3"
 	mp4Ext    = "mp4"
