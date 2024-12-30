@@ -15,9 +15,10 @@ func Test_formatName(t *testing.T) {
 		title string
 		want  string
 	}{
+		{name: "empty title", title: "", want: ""},
 		{name: "name", title: "abcd", want: "abcd"},
 		{name: "name - 2", title: "abcd|bcded", want: "abcdbcded"},
-		{"name - 3", "abcd&bcd|ed", "abcdbcded"},
+		{name: "name - 3", title: "abcd&bcd|ed", want: "abcdbcded"},
 	}
 
 	for i, tt := range tests {
@@ -39,9 +40,9 @@ func Test_getThumbnail(t *testing.T) {
 		tbs  youtube.Thumbnails
 		want *models.Image
 	}{
-		{"nil case", nil, nil},
-		{"one thumbnail case", youtube.Thumbnails{{URL: url, Width: w, Height: h}},
-			&models.Image{URL: url, Width: w, Height: h}},
+		{name: "nil case", tbs: nil, want: nil},
+		{name: "one thumbnail case", tbs: youtube.Thumbnails{{URL: url, Width: w, Height: h}},
+			want: &models.Image{URL: url, Width: w, Height: h}},
 	}
 
 	for i, tt := range tests {
