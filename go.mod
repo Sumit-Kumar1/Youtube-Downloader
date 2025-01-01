@@ -2,8 +2,6 @@ module ytdl_http
 
 go 1.23
 
-toolchain go1.23.4
-
 require (
 	github.com/golang/mock v1.6.0
 	github.com/kkdai/youtube/v2 v2.10.2
