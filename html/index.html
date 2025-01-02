@@ -30,7 +30,7 @@
 </head>
 <script defer src="https://cdn.tailwindcss.com"></script>
 
-<body class="dark:bg-[#212121] p-5 bg-[#f8f8f8]">
+<body class="dark:bg-[#212121] min-[320px]:p-1 md:p-5 bg-[#f8f8f8]">
   <h1 class="text-5xl text-white m-3 text-center">
     Youtube Video Downloader
   </h1>
@@ -127,10 +127,10 @@
 {{ end }}
 
 {{ block "info" . }}
-<div class='flex flex-col gap-3 p-3 dark:text-white'>
+<div class='flex flex-col min-[320px]:gap-2 gap-3 md:p-3 dark:text-white'>
   {{ range .Data}}
   <div
-    class="flex md:flex-row sm:flex-col gap-5 hover:dark:bg-gray-700 hover:bg-blue-300 p-5 border-dotted border-2 border-[#1d1d1d] rounded-lg">
+    class="flex md:flex-row min-[320px]:flex-col md:gap-5 dark:hover:bg-gray-700 hover:bg-blue-300 md:p-5 border-dotted border-2 border-[#1d1d1d] rounded-lg">
     <div class="relative">
       <img src="{{.Thumbnail.URL}}" width="{{.Thumbnail.Width}}" height="{{.Thumbnail.Height}}" alt="vid Thumbnail"
         sizes="(max-width: 340px) 300px,(max-width: 500px) 450px,900px" loading="lazy"
@@ -161,9 +161,8 @@
 {{ block "vidInf" . }}
 <div class="relative">
   <img src="{{.Thumbnail.Src}}" width="{{.Thumbnail.Width}}" height="{{.Thumbnail.Height}}" alt="vid Thumbnail"
-    class="h-auto max-w-sm rounded-lg shadow-none transition-shadow duration-300 ease-in-out hover:shadow-lg hover:shadow-black/30" />
-  <p id="durOverlay" class="absolute bottom-2 right-1"><span class='bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded
-                dark:bg-gray-700 dark:text-gray-300'>{{.Duration}}<span></p>
+    class="h-auto max-w-[300px] rounded-lg shadow-none transition-shadow duration-300 ease-in-out hover:shadow-lg hover:shadow-black" />
+  <p id="durOverlay" class="absolute bottom-2 right-1"><span class='bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300'>{{.Duration}}<span></p>
 </div>
 <div class="flex flex-col justify-center">
   <p class='text-xl font-bold'>{{.Title}}</p>
@@ -173,7 +172,7 @@
 
 {{ block "downloadInfo" . }}
 <form hx-post='/download?id={{.ID}}' hx-indicator="#spinner"
-  class='flex sm:flex-col sm:w-full md:flex-row p-3 rounded-md gap-3 h-auto items-center border-2 justify-center'>
+  class='flex min-[320px]:w-full md:flex-row md:p-3 rounded-md min-[320px]:gap-2 md:gap-3 h-auto items-center border-2 justify-center pl-2'>
   <select name='quality' id='qual' class='border rounded-md text-black'>
     {{ range $val := .VidQuality }}
     <option value="{{$val}}">{{$val}}</option>
@@ -186,7 +185,6 @@
   <button type='submit'
     class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
     Download
-
   </button>
   <svg id="spinner" class="htmx-indicator" width="24" height="24" viewBox="0 0 24 24"
     xmlns="http://www.w3.org/2000/svg">
