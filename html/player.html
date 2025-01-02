@@ -54,8 +54,17 @@
 <script defer src="https://cdn.tailwindcss.com"></script>
 
 <body class="bg-[#212121]">
-  <div class="min-w-full min-h-full flex">
-    <div class="flex flex-col gap-5 items-center justify-center border-blue-500 border-l-2 rounded-xl h-[100vh] w-20">
+  <div class="md:min-w-full md:min-h-full md:flex md:flex-col-reverse">
+    <!-- area where media plays -->
+    <div class="flex p-5 gap-3 max-h-screen justify-center min-h-[90vh] w-full items-center justify-center">
+      <div id="player" class="p-5 w-full rounded-xl h-full">
+        <p class="text-[#22D3EE]">Hey there!! Play Something From the Awesome downloads you had</p>
+      </div>
+    </div>
+
+    <!-- svg buttons -->
+    <div
+      class="flex min-[320px]:flex-row md:flex-col gap-5 items-center justify-center border-blue-500 border-l-2 rounded-xl md:h-[100vh] md:w-20">
       <a href="/" class="flex-none font-bold">
         <svg width="40px" height="40px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path fill-rule="evenodd" clip-rule="evenodd"
@@ -63,7 +72,7 @@
             fill="#FFF" />
         </svg>
       </a>
-      <div id="list" class="rounded-xl h-auto flex gap-5 flex-col ">
+      <div id="list" class="rounded-xl h-auto flex gap-5 md:flex-col">
         <button class="collapsible">
           <svg width="50px" height="50px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path
@@ -90,7 +99,7 @@
             {{end}} {{end}}
           </div>
         </div>
-        <button class="collapsible"> <svg width="50px" height="50px" viewBox="0 0 24 24" fill="none"
+        <button class="collapsible"><svg width="50px" height="50px" viewBox="0 0 24 24" fill="none"
             xmlns="http://www.w3.org/2000/svg">
             <path d="M19.5617 7C19.7904 5.69523 18.7863 4.5 17.4617 4.5H6.53788C5.21323 4.5 4.20922 5.69523 4.43784 7"
               stroke="#FFF" stroke-width="1.5" />
@@ -115,12 +124,6 @@
             {{end}} {{end}}
           </div>
         </div>
-      </div>
-    </div>
-
-    <div class="flex p-5 gap-3 max-h-screen justify-center min-h-[90vh] w-full items-center justify-center">
-      <div id="player" class="p-5 w-full rounded-xl h-full">
-        <p class="text-[#22D3EE]">Hey there!! Play Something From the Awesome downloads you had</p>
       </div>
     </div>
   </div>
