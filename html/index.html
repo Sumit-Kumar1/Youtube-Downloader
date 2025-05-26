@@ -10,9 +10,11 @@
   <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16x16.png">
   <link rel="manifest" href="assets/site.webmanifest">
   <title>Youtube Downloader</title>
-  <script src="https://unpkg.com/htmx.org@1.9.12"
-    integrity="sha384-ujb1lZYygJmzgSwoxRggbCHcjc0rB2XoQrxeTUQyRjrOnlCoYta87iKBWq3EsdM2"
+  <script src="https://unpkg.com/htmx.org@2.0.4"
+    integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
     crossorigin="anonymous"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <style>
     .htmx-indicator {
       opacity: 0;
@@ -28,98 +30,38 @@
     }
   </style>
 </head>
-<script defer src="https://cdn.tailwindcss.com"></script>
+
 
 <body class="dark:bg-[#212121] min-[320px]:p-1 md:p-5 bg-[#f8f8f8]">
-  <h1 class="text-5xl text-white m-3 text-center">
+  <h1 class="text-5xl m-3 text-center dark:text-white">
     Youtube Video Downloader
   </h1>
 
-  <div class="flex flex-col text-white rounded-xl px-3 py-4">
-    <form hx-target="#dContainer" hx-swap="innerHTML" hx-post="/getInfo" class="flex gap-3" hx-indicator="#spinner">
-      <input type="url" name="URL" id="URL" placeholder="Enter video URL here"
-        class="p-2.5 bg-gray-50 border border-gray-300 text-gray-900 text-md rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" />
-      <button type="submit"
-        class="flex-none w-auto bg-[#1d1d1d] border border-[#2272FF] rounded-xl hover:bg-blue-700 text-[#2272FF] hover:text-white font-bold px-3 py-2">
+  <div class="flex rounded-xl md:px-3 md:py-4 min-[320px]:p-2 flex-col">
+    <form hx-target="#dContainer" hx-swap="innerHTML" hx-post="/getInfo" class="flex md:gap-3 md:flex-row min-[320px]:flex-col min-[320px]:gap-2" hx-indicator="#spinner">
+      <label class="input w-full">
+        <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.3-4.3"></path>
+          </g>
+        </svg>
+        <input type="url" name="URL" id="URL" placeholder="Enter video URL here" class="" />
+      </label>
+      <button type="submit" class="btn btn-primary btn-outline">
         Get Info
       </button>
-      <a href="/player"
-        class="bg-[#1d1d1d] border border-[#2272FF] rounded-xl p-3 hover:bg-blue-700 text-[#2272FF] hover:text-white font-bold">
+      <a href="/player" class="btn btn-outline btn-secondary">
         Player</a>
     </form>
   </div>
 
-
-  <div id="dContainer"
-    class="w-full max-h-[83vh] p-4 bg-white rounded-lg shadow-lg dark:bg-[#1d1d1d] overflow-y-scroll overflow-x-scroll border-b-dotted shadow-gray-800">
-    <svg id="spinner" class="htmx-indicator text-center block" width="40" height="40" viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg">
-      <style>
-        .spinner_Wezc {
-          transform-origin: center;
-          animation: spinner_Oiah .75s step-end infinite
-        }
-
-        @keyframes spinner_Oiah {
-          8.3% {
-            transform: rotate(30deg)
-          }
-
-          16.6% {
-            transform: rotate(60deg)
-          }
-
-          25% {
-            transform: rotate(90deg)
-          }
-
-          33.3% {
-            transform: rotate(120deg)
-          }
-
-          41.6% {
-            transform: rotate(150deg)
-          }
-
-          50% {
-            transform: rotate(180deg)
-          }
-
-          58.3% {
-            transform: rotate(210deg)
-          }
-
-          66.6% {
-            transform: rotate(240deg)
-          }
-
-          75% {
-            transform: rotate(270deg)
-          }
-
-          83.3% {
-            transform: rotate(300deg)
-          }
-
-          91.6% {
-            transform: rotate(330deg)
-          }
-
-          100% {
-            transform: rotate(360deg)
-          }
-        }
-      </style>
-      <g class="spinner_Wezc">
-        <circle cx="12" cy="2.5" r="1.5" opacity="1.00" />
-        <circle cx="16.75" cy="3.77" r="1.5" opacity=".29" />
-        <circle cx="20.23" cy="7.25" r="1.5" opacity=".43" />
-        <circle cx="21.50" cy="12.00" r="1.5" opacity=".57" />
-        <circle cx="20.23" cy="16.75" r="1.5" opacity=".71" />
-        <circle cx="16.75" cy="20.23" r="1.5" opacity=".86" />
-        <circle cx="12" cy="21.5" r="1.5" />
-      </g>
-    </svg>
+  <div class="bg-base-200 min-h-1/2">
+    <div class="flex text-center">
+      <div id="dContainer">
+      <span id="spinner" class="htmx-indicator loading loading-spinner loading-xl text-neutral"></span>
+      </div>
+    </div>
   </div>
 </body>
 
@@ -127,23 +69,23 @@
 {{ end }}
 
 {{ block "info" . }}
-<div class='flex flex-col min-[320px]:gap-2 gap-3 md:p-3 dark:text-white'>
+<div class="flex flex-col min-[320px]:gap-2 gap-3 md:p-3">
   {{ range .Data}}
   <div
-    class="flex md:flex-row min-[320px]:flex-col md:gap-5 dark:hover:bg-gray-700 hover:bg-blue-300 md:p-5 border-dotted border-2 border-[#1d1d1d] rounded-lg">
+    class="flex md:flex-row min-[320px]:flex-col min-[320px]:p-1 md:gap-5 hover:bg-base-300 md:p-5 border-dotted border-2 border-[#1d1d1d] rounded-lg">
     <div class="relative">
       <img src="{{.Thumbnail.URL}}" width="{{.Thumbnail.Width}}" height="{{.Thumbnail.Height}}" alt="vid Thumbnail"
         sizes="(max-width: 340px) 300px,(max-width: 500px) 450px,900px" loading="lazy"
-        class="object-fill h-auto max-w-sm rounded-lg shadow-none transition-shadow duration-300 ease-in-out hover:shadow-lg hover:shadow-black/30">
-      <p id="durOverlay" class="absolute bottom-2 right-1"><span class='bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded
-          dark:bg-gray-700 dark:text-gray-300'>{{.Duration}}<span></p>
+        class="object-fill h-auto max-w-min-[320px] rounded-lg shadow-none transition-shadow duration-300 ease-in-out hover:shadow-lg hover:shadow-black/30">
+      <p id="durOverlay" class="absolute bottom-2 right-1"><span class="bg-base-100 text-base-700 text-xs font-medium me-2 px-2.5 py-0.5 rounded
+          dark:bg-gray-500 dark:text-gray-300">{{.Duration}}<span></p>
     </div>
-    <div class="flex flex-col justify-center gap-3">
+    <div class="flex flex-col justify-center gap-3 md:text-left min-[320px]:text-center">
       <p class='text-xl font-bold'>{{.Title}}</p>
       <p><span class='text-green-300'>{{.Author}}</span></p>
       <div class="mt-5">
         <button hx-get="/info?id={{.ID}}&title={{.Title}}" hx-swap="outerHTML"
-          class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2.5 text-center me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+          class="btn btn-info">
           Get Download Info</button>
       </div>
     </div>
@@ -162,18 +104,20 @@
 <div class="relative">
   <img src="{{.Thumbnail.Src}}" width="{{.Thumbnail.Width}}" height="{{.Thumbnail.Height}}" alt="vid Thumbnail"
     class="h-auto max-w-[300px] rounded-lg shadow-none transition-shadow duration-300 ease-in-out hover:shadow-lg hover:shadow-black" />
-  <p id="durOverlay" class="absolute bottom-2 right-1"><span class='bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300'>{{.Duration}}<span></p>
+  <p id="durOverlay" class="absolute bottom-2 right-1"><span
+      class='bg-gray-100 text-gray-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded dark:bg-gray-700 dark:text-gray-300'>{{.Duration}}<span>
+  </p>
 </div>
 <div class="flex flex-col justify-center">
   <p class='text-xl font-bold'>{{.Title}}</p>
-  <p><span class='text-green-300'>{{.Author}}</span></p>
+  <p><span class='text-accent'>{{.Author}}</span></p>
 </div>
 {{ end }}
 
 {{ block "downloadInfo" . }}
 <form hx-post='/download?id={{.ID}}' hx-indicator="#spinner"
   class='flex min-[320px]:w-full md:flex-row md:p-3 rounded-md min-[320px]:gap-2 md:gap-3 h-auto items-center border-2 justify-center pl-2'>
-  <select name='quality' id='qual' class='border rounded-md text-black'>
+  <select name='quality' id='qual' class="select select-info">
     {{ range $val := .VidQuality }}
     <option value="{{$val}}">{{$val}}</option>
     {{ end }}
@@ -182,8 +126,7 @@
     <input type='checkbox' name="audioOnly" value="true" id="audioOnly" />
     <label for="audioOnly">Audio Only</label>
   </div>
-  <button type='submit'
-    class="text-white bg-blue-700 hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium rounded-md text-sm px-5 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">
+  <button type='submit' class="btn btn-outline btn-accent">
     Download
   </button>
   <svg id="spinner" class="htmx-indicator" width="24" height="24" viewBox="0 0 24 24"
@@ -258,5 +201,5 @@
 {{ end }}
 
 {{ block "status" . }}
-<p id={{.ID}} class="text-green-500">Download Completed!!</p>
+<p id={{.ID}} class="text-success">Download Completed!!</p>
 {{ end }}
