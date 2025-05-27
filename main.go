@@ -24,7 +24,7 @@ func main() {
 	e.Renderer = t
 
 	if _, err := os.Stat(models.DirPath); os.IsNotExist(err) {
-		if err := os.Mkdir(models.DirPath, 0755); err != nil {
+		if err := os.Mkdir(models.DirPath, 0750); err != nil {
 			e.Logger.Errorf("error while creating the directory: %s", err.Error())
 
 			return

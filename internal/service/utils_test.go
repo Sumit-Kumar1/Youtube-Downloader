@@ -1,8 +1,9 @@
 package service
 
 import (
-	"errors"
 	"testing"
+
+	"ytdl_http/internal/models"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -20,7 +21,7 @@ func Test_validateURL(t *testing.T) {
 	}{
 		{name: "playlist url", url: plURL, expErr: nil},
 		{name: "video url", url: vidURL, expErr: nil},
-		{name: "invalid url", url: "www.lazy.com", expErr: errors.New("not a valid link")},
+		{name: "invalid url", url: "www.lazy.com", expErr: models.ErrInvalid("link")},
 	}
 
 	for i, tt := range tests {
