@@ -1,9 +1,11 @@
 package service
 
 import (
-	"errors"
+	"os/exec"
 	"regexp"
 	"strings"
+
+	"ytdl_http/internal/models"
 )
 
 var (
@@ -12,7 +14,7 @@ var (
 
 func validateURL(url string) error {
 	if !strings.Contains(url, "youtu") || !strings.ContainsAny(url, "\"?&/<%=") {
-		return errors.New("not a valid link")
+		return models.ErrInvalid("link")
 	}
 
 	return nil
@@ -20,4 +22,13 @@ func validateURL(url string) error {
 
 func isPlaylistURL(url string) bool {
 	return playlistRegex.MatchString(url)
+}
+
+func isFFMpegInstalled() bool {
+	cmd := exec.Command("ffmpeg", "-version")
+	if _, err := cmd.CombinedOutput(); err != nil {
+		return false
+	}
+
+	return true
 }

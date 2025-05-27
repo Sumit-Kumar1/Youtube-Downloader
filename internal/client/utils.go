@@ -1,6 +1,9 @@
 package client
 
 import (
+	"io"
+	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -34,4 +37,43 @@ func formatName(title string) string {
 	name := re.ReplaceAllString(title, "")
 
 	return strings.TrimSpace(name)
+}
+
+func stream2File(stream io.ReadCloser, fileName string) error {
+	tempF, err := os.CreateTemp(os.TempDir(), fileName)
+	if err != nil {
+		return err
+	}
+
+	defer func() { _ = tempF.Close() }()
+
+	if _, err = io.Copy(tempF, stream); err != nil {
+		return err
+	}
+
+	if err := tempF.Sync(); err != nil {
+		return nil
+	}
+
+	defer func() { _ = os.RemoveAll(tempF.Name()) }()
+
+	file, err := os.Create(filepath.Clean(models.DirPath + "/" + fileName))
+	if err != nil {
+		return err
+	}
+
+	data, err := os.ReadFile(tempF.Name())
+	if err != nil {
+		return err
+	}
+
+	if _, err := file.Write(data); err != nil {
+		return err
+	}
+
+	if err := file.Sync(); err != nil {
+		return err
+	}
+
+	return file.Close()
 }

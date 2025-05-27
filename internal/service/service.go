@@ -8,8 +8,8 @@ type Service struct {
 	YtClient YtClient
 }
 
-func New(y YtClient) *Service {
-	return &Service{YtClient: y}
+func New(yc YtClient) *Service {
+	return &Service{YtClient: yc}
 }
 
 func (s *Service) GetInfo(url string) ([]models.Video, error) {
@@ -31,6 +31,10 @@ func (s *Service) DownloadInfo(videoID string) ([]string, error) {
 func (s *Service) Download(id, qual, audioOnly string) error {
 	switch audioOnly {
 	case "":
+		if !isFFMpegInstalled() {
+			return models.ErrNotFound("'ffmpeg' executable")
+		}
+
 		if err := s.YtClient.DownloadVideo(id, qual); err != nil {
 			return err
 		}

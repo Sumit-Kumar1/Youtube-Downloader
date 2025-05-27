@@ -30,6 +30,7 @@ func Test_formatName(t *testing.T) {
 
 func Test_getThumbnail(t *testing.T) {
 	url := "http://www.image.com"
+
 	var (
 		w uint = 10
 		h uint = 10

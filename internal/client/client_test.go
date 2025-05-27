@@ -25,6 +25,7 @@ func TestClient_GetVideo(t *testing.T) {
 	url := "dummy.Youtube.com"
 	id := uuid.NewString()
 	title := "dummy Vid"
+
 	dur, err := time.ParseDuration("3m")
 	if err != nil {
 		t.Errorf("error during parsing time: %v", err)

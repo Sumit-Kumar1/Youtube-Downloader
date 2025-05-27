@@ -14,7 +14,7 @@ func getDownloadedFiles() ([]models.Player, error) {
 	}
 
 	var (
-		pl []models.Player
+		pl = make([]models.Player, 0)
 		p  models.Player
 	)
 
