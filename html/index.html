@@ -14,7 +14,9 @@
     integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+"
     crossorigin="anonymous"></script>
   <link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
-  <script defer src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"
+    integrity="sha384-A1XhMANHciQ8ED89Ap5K0zOdmQKiEeXSjaN0sakNxIzq9Z2YfXV/BwHp7oP3z5ip"
+    crossorigin="anonymous"></script>
   <style>
     .htmx-indicator {
       opacity: 0;
@@ -38,7 +40,8 @@
   </h1>
 
   <div class="flex rounded-xl md:px-3 md:py-4 min-[320px]:p-2 flex-col">
-    <form hx-target="#dContainer" hx-swap="innerHTML" hx-post="/getInfo" class="flex md:gap-3 md:flex-row min-[320px]:flex-col min-[320px]:gap-2" hx-indicator="#spinner">
+    <form hx-target="#dContainer" hx-swap="innerHTML" hx-post="/getInfo"
+      class="flex md:gap-3 md:flex-row min-[320px]:flex-col min-[320px]:gap-2" hx-indicator="#spinner">
       <label class="input w-full">
         <svg class="h-[1em] opacity-50" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
           <g stroke-linejoin="round" stroke-linecap="round" stroke-width="2.5" fill="none" stroke="currentColor">
@@ -59,7 +62,7 @@
   <div class="bg-base-200 min-h-1/2">
     <div class="flex text-center">
       <div id="dContainer">
-      <span id="spinner" class="htmx-indicator loading loading-spinner loading-xl text-neutral"></span>
+        <span id="spinner" class="htmx-indicator loading loading-spinner loading-xl text-neutral"></span>
       </div>
     </div>
   </div>
@@ -84,8 +87,7 @@
       <p class='text-xl font-bold'>{{.Title}}</p>
       <p><span class='text-green-300'>{{.Author}}</span></p>
       <div class="mt-5">
-        <button hx-get="/info?id={{.ID}}&title={{.Title}}" hx-swap="outerHTML"
-          class="btn btn-info">
+        <button hx-get="/info?id={{.ID}}&title={{.Title}}" hx-swap="outerHTML" class="btn btn-info">
           Get Download Info</button>
       </div>
     </div>
