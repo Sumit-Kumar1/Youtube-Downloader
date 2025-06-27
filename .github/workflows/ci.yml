@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - "*"
+  push:
+    branches:
+      - main
+      - development
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: "go.mod"
+          cache: true
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Run tests
+        run: |
+          go install gotest.tools/gotestsum@latest
+          mkdir coverage
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 gotestsum --format testname -- -count=1 -p 1 -coverprofile=coverage/coverage.out.tmp ./... -coverpkg=./... -timeout 5m
+
+      - name: Build
+        run: |
+          CGO_ENABLED=0 GOOS=linux go build -v ./...
+
+      - name: Test coverage report
+        run: |
+          cat coverage/coverage.out.tmp >> coverage/coverage.out
+          go tool cover -func=coverage/coverage.out
+
+  code-quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: 'go.mod'
+          cache: true
+
+      - name: Install dependencies
+        run: go mod download
+
+      - name: Run linter check
+        uses: golangci/golangci-lint-action@v8
+        with:
+          version: v2.1
+          working-directory: .
+          args: ./... --timeout=5m
+          skip-cache: false
