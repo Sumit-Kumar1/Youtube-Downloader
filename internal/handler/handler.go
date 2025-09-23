@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"context"
 	"net/http"
 
 	"ytdl_http/internal/models"
@@ -17,62 +18,54 @@ type Handler struct {
 // New to init the handler.
 func New(s Servicer) *Handler {
 	return &Handler{
-		player:  make(map[string]bool, 0),
+		player:  make(map[string]bool),
 		service: s,
 	}
 }
 
 // Page render the root index.html page.
-//
-//nolint:revive // to make it consistent at main
 func (h *Handler) Page(c echo.Context) error {
 	return c.Render(http.StatusOK, "index", nil)
 }
 
-// Page render the root index.html page.
-//
-//nolint:revive // to make it consistent at main
+// PagePlayer render the root index.html page.
 func (h *Handler) PagePlayer(c echo.Context) error {
 	data, err := getDownloadedFiles()
 	if err != nil {
 		c.Logger().Errorf(err.Error())
-		return c.Render(http.StatusOK, "error", map[string]string{"error": ""})
+		return c.Render(http.StatusOK, "error", map[string]string{"error": err.Error()})
 	}
 
-	return c.Render(http.StatusOK, "Player", map[string]any{"Data": data})
+	return c.Render(http.StatusOK, "Player", map[string]any{models.Data: data})
 }
 
-//nolint:revive // to make it consistent at main
 func (h *Handler) Play(c echo.Context) error {
 	var p models.Player
 
-	title := c.QueryParam("title")
+	title := c.QueryParam(models.Title)
 
 	p.FillByName(title)
 
 	switch p.Type {
-	case "audio/mpeg":
-		return c.Render(http.StatusOK, "audio", map[string]any{"Data": p})
-	case "video/mp4":
-		return c.Render(http.StatusOK, "video", map[string]any{"Data": p})
-	default:
+	case models.TypeAudio:
+		return c.Render(http.StatusOK, "audio", map[string]any{models.Data: p})
+	case models.TypeVideo:
+		return c.Render(http.StatusOK, "video", map[string]any{models.Data: p})
 	}
 
 	return nil
 }
 
-// GetInfo retrives the information about the url provided.
+// GetInfo retrieves the information about the url provided.
 func (h *Handler) GetInfo(c echo.Context) error {
 	url := c.FormValue("URL")
 
-	data, err := h.service.GetInfo(url)
+	data, err := h.service.GetInfo(context.Background(), url)
 	if err != nil {
 		return c.Render(http.StatusOK, "error", map[string]string{"error": err.Error()})
 	}
 
-	d := map[string][]models.Video{
-		"Data": data,
-	}
+	d := map[string][]models.Video{models.Data: data}
 
 	return c.Render(http.StatusOK, "info", d)
 }
@@ -83,7 +76,7 @@ func (h *Handler) Download(c echo.Context) error {
 	id := c.FormValue("id")
 	audioOnly := c.FormValue("audioOnly")
 
-	if err := h.service.Download(id, qual, audioOnly); err != nil {
+	if err := h.service.Download(context.Background(), id, qual, audioOnly); err != nil {
 		c.Logger().Errorf("Download err: %s", err.Error())
 
 		return err
@@ -95,7 +88,7 @@ func (h *Handler) Download(c echo.Context) error {
 func (h *Handler) DownloadInfo(c echo.Context) error {
 	videoID := c.QueryParam("id")
 
-	qualities, err := h.service.DownloadInfo(videoID)
+	qualities, err := h.service.DownloadInfo(context.Background(), videoID)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}

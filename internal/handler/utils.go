@@ -8,7 +8,7 @@ import (
 )
 
 func getDownloadedFiles() ([]models.Player, error) {
-	entries, err := os.ReadDir("Downloads")
+	entries, err := os.ReadDir(models.DirDownloads)
 	if err != nil {
 		return nil, err
 	}
@@ -26,8 +26,11 @@ func getDownloadedFiles() ([]models.Player, error) {
 
 		p.FillByName(info.Name())
 
-		p.ID = strconv.Itoa(i)
-		pl = append(pl, p)
+		switch p.Type {
+		case models.TypeAudio, models.TypeVideo:
+			p.ID = strconv.Itoa(i)
+			pl = append(pl, p)
+		}
 	}
 
 	return pl, nil

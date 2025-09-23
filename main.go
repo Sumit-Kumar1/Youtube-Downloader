@@ -33,7 +33,7 @@ func main() {
 
 	h := setupDeps()
 
-	addMiddleWares(e)
+	addMiddlewares(e)
 
 	e.GET("/", h.Page)
 	e.GET("/player", h.PagePlayer)
@@ -44,8 +44,10 @@ func main() {
 
 	e.POST("/getInfo", h.GetInfo)
 	e.POST("/download", h.Download)
-	e.GET("/resource/*", echo.WrapHandler(http.StripPrefix("/resource/", http.FileServer(http.Dir("./Downloads")))))
-	e.GET("/assets/*", echo.WrapHandler(http.StripPrefix("/assets/", http.FileServer(http.Dir("assets")))))
+	e.GET("/resource/*", echo.WrapHandler(http.StripPrefix("/resource/",
+		http.FileServer(http.Dir(models.DirDownloads)))))
+	e.GET("/assets/*", echo.WrapHandler(http.StripPrefix("/assets/",
+		http.FileServer(http.Dir(models.DirAssets)))))
 
 	e.Logger.Fatal(e.Start(":12344"))
 }
@@ -53,14 +55,13 @@ func main() {
 func setupDeps() *handler.Handler {
 	ytCl := client.New()
 	s := service.New(ytCl)
-
 	return handler.New(s)
 }
 
-func addMiddleWares(app *echo.Echo) {
+func addMiddlewares(app *echo.Echo) {
 	app.Pre(middleware.RemoveTrailingSlash())
-	app.Use(middleware.Logger())
-	app.Use(echoprometheus.NewMiddleware("ytdl_http"))
+	app.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{}))
+	app.Use(echoprometheus.NewMiddleware(models.AppName))
 	app.Use(middleware.Recover())
 	app.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(
 		rate.Limit(160),

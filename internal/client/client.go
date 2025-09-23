@@ -125,5 +125,9 @@ func (c *Client) DownloadAudio(id string) error {
 		return err
 	}
 
+	if err := addMetaData(ctx, vid, fileName); err != nil {
+		return err
+	}
+
 	return stream.Close()
 }

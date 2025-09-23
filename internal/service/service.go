@@ -35,6 +35,8 @@ func (s *Service) Download(id, qual, audioOnly string) error {
 			return models.ErrNotFound("'ffmpeg' executable")
 		}
 
+	switch audioOnly {
+	case "":
 		if err := s.YtClient.DownloadVideo(id, qual); err != nil {
 			return err
 		}
