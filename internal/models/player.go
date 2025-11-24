@@ -5,8 +5,11 @@ const (
 	m4aExt    = "m4a"
 	mp3Ext    = "mp3"
 	mp4Ext    = "mp4"
-	audioType = "audio/mpeg"
-	videoType = "video/mp4"
+	AudioType = "audio/mpeg"
+	VideoType = "video/mp4"
+	AppName   = "Youtube-Downloader"
+	Data      = "data"
+	Title     = "title"
 )
 
 type Player struct {
@@ -26,10 +29,10 @@ func (p *Player) FillByName(name string) {
 	switch ext {
 	case m4aExt, mp3Ext:
 		p.IsAudio = true
-		p.Type = audioType
+		p.Type = AudioType
 	case mp4Ext:
 		p.IsAudio = false
-		p.Type = videoType
+		p.Type = VideoType
 	default:
 	}
 

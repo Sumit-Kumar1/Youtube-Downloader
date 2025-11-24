@@ -45,11 +45,11 @@ func main() {
 	e.POST("/getInfo", h.GetInfo)
 	e.POST("/download", h.Download)
 	e.GET("/resource/*", echo.WrapHandler(http.StripPrefix("/resource/",
-		http.FileServer(http.Dir(models.DirDownloads)))))
+		http.FileServer(http.Dir(models.DirPath)))))
 	e.GET("/assets/*", echo.WrapHandler(http.StripPrefix("/assets/",
-		http.FileServer(http.Dir(models.DirAssets)))))
+		http.FileServer(http.Dir(models.DirPath)))))
 
-	e.Logger.Fatal(e.Start(":12344"))
+	e.Logger.Fatal(e.Start(":9001"))
 }
 
 func setupDeps() *handler.Handler {

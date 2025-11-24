@@ -1,6 +1,8 @@
 package service
 
 import (
+	"context"
+
 	"ytdl_http/internal/models"
 )
 
@@ -12,7 +14,7 @@ func New(yc YtClient) *Service {
 	return &Service{YtClient: yc}
 }
 
-func (s *Service) GetInfo(url string) ([]models.Video, error) {
+func (s *Service) GetInfo(ctx context.Context, url string) ([]models.Video, error) {
 	if err := validateURL(url); err != nil {
 		return nil, err
 	}
@@ -24,16 +26,14 @@ func (s *Service) GetInfo(url string) ([]models.Video, error) {
 	return s.getVideoData(url)
 }
 
-func (s *Service) DownloadInfo(videoID string) ([]string, error) {
+func (s *Service) DownloadInfo(ctx context.Context, videoID string) ([]string, error) {
 	return s.YtClient.GetDownloadInfo(videoID)
 }
 
-func (s *Service) Download(id, qual, audioOnly string) error {
-	switch audioOnly {
-	case "":
-		if !isFFMpegInstalled() {
-			return models.ErrNotFound("'ffmpeg' executable")
-		}
+func (s *Service) Download(ctx context.Context, id, qual, audioOnly string) error {
+	if !isFFMpegInstalled() {
+		return models.ErrNotFound("'ffmpeg' executable")
+	}
 
 	switch audioOnly {
 	case "":

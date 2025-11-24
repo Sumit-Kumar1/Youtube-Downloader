@@ -47,9 +47,9 @@ func (h *Handler) Play(c echo.Context) error {
 	p.FillByName(title)
 
 	switch p.Type {
-	case models.TypeAudio:
+	case models.AudioType:
 		return c.Render(http.StatusOK, "audio", map[string]any{models.Data: p})
-	case models.TypeVideo:
+	case models.VideoType:
 		return c.Render(http.StatusOK, "video", map[string]any{models.Data: p})
 	}
 
