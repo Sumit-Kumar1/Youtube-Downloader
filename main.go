@@ -1,8 +1,12 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"net/http"
 	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"ytdl_http/internal/client"
@@ -47,9 +51,24 @@ func main() {
 	e.GET("/resource/*", echo.WrapHandler(http.StripPrefix("/resource/",
 		http.FileServer(http.Dir(models.DirPath)))))
 	e.GET("/assets/*", echo.WrapHandler(http.StripPrefix("/assets/",
-		http.FileServer(http.Dir(models.DirPath)))))
+		http.FileServer(http.Dir("assets")))))
 
-	e.Logger.Fatal(e.Start(":9001"))
+	go func() {
+		if err := e.Start(":9001"); err != nil && !errors.Is(err, http.ErrServerClosed) {
+			e.Logger.Fatal(err)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	if err := e.Shutdown(ctx); err != nil {
+		e.Logger.Fatal(err)
+	}
 }
 
 func setupDeps() *handler.Handler {

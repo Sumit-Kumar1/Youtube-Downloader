@@ -21,7 +21,12 @@ func Test_validateURL(t *testing.T) {
 	}{
 		{name: "playlist url", url: plURL, expErr: nil},
 		{name: "video url", url: vidURL, expErr: nil},
-		{name: "invalid url", url: "www.lazy.com", expErr: models.ErrInvalid("link")},
+		{name: "youtu.be short url", url: "https://youtu.be/dQw4w9WgXcQ", expErr: nil},
+		{name: "mobile youtube", url: "https://m.youtube.com/watch?v=abc123", expErr: nil},
+		{name: "invalid url - not youtube", url: "https://www.lazy.com", expErr: models.ErrInvalid("link")},
+		{name: "invalid url - no scheme", url: "www.youtube.com", expErr: models.ErrInvalid("link")},
+		{name: "invalid url - empty", url: "", expErr: models.ErrInvalid("link")},
+		{name: "invalid url - random text", url: "not a url at all", expErr: models.ErrInvalid("link")},
 	}
 
 	for i, tt := range tests {

@@ -34,6 +34,7 @@ func (p *Player) FillByName(name string) {
 		p.IsAudio = false
 		p.Type = VideoType
 	default:
+		return
 	}
 
 	p.Title = name

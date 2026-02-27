@@ -114,7 +114,7 @@
 {{ end }}
 
 {{ block "downloadInfo" . }}
-<form hx-post='/download?id={{.ID}}' hx-indicator="#spinner"
+<form hx-post='/download?id={{.ID}}' hx-indicator="#dlSpinner"
   class='flex min-[320px]:w-full md:flex-row md:p-3 rounded-md min-[320px]:gap-2 md:gap-3 h-auto items-center border-2 justify-center pl-2'>
   <select name='quality' id='qual' class="select select-info">
     {{ range $val := .VidQuality }}
@@ -128,7 +128,7 @@
   <button type='submit' class="btn btn-outline btn-accent">
     Download
   </button>
-  <svg id="spinner" class="htmx-indicator" width="24" height="24" viewBox="0 0 24 24"
+  <svg id="dlSpinner" class="htmx-indicator" width="24" height="24" viewBox="0 0 24 24"
     xmlns="http://www.w3.org/2000/svg">
     <style>
       .spinner_Wezc {

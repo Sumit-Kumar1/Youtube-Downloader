@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"context"
 	"net/http"
 
 	"ytdl_http/internal/models"
@@ -11,14 +10,12 @@ import (
 
 // Handler type contains service type for dependency injection.
 type Handler struct {
-	player  map[string]bool
 	service Servicer
 }
 
 // New to init the handler.
 func New(s Servicer) *Handler {
 	return &Handler{
-		player:  make(map[string]bool),
 		service: s,
 	}
 }
@@ -28,7 +25,7 @@ func (h *Handler) Page(c echo.Context) error {
 	return c.Render(http.StatusOK, "index", nil)
 }
 
-// PagePlayer render the root index.html page.
+// PagePlayer render the player page.
 func (h *Handler) PagePlayer(c echo.Context) error {
 	data, err := getDownloadedFiles()
 	if err != nil {
@@ -51,16 +48,16 @@ func (h *Handler) Play(c echo.Context) error {
 		return c.Render(http.StatusOK, "audio", map[string]any{models.Data: p})
 	case models.VideoType:
 		return c.Render(http.StatusOK, "video", map[string]any{models.Data: p})
+	default:
+		return c.Render(http.StatusOK, "error", map[string]string{"error": "unsupported media type"})
 	}
-
-	return nil
 }
 
 // GetInfo retrieves the information about the url provided.
 func (h *Handler) GetInfo(c echo.Context) error {
 	url := c.FormValue("URL")
 
-	data, err := h.service.GetInfo(context.Background(), url)
+	data, err := h.service.GetInfo(c.Request().Context(), url)
 	if err != nil {
 		return c.Render(http.StatusOK, "error", map[string]string{"error": err.Error()})
 	}
@@ -70,16 +67,16 @@ func (h *Handler) GetInfo(c echo.Context) error {
 	return c.Render(http.StatusOK, "info", d)
 }
 
-// Download start download process based on quality and videoID
+// Download start download process based on quality and videoID.
 func (h *Handler) Download(c echo.Context) error {
 	qual := c.FormValue("quality")
 	id := c.FormValue("id")
-	audioOnly := c.FormValue("audioOnly")
+	audioOnly := c.FormValue("audioOnly") == "true"
 
-	if err := h.service.Download(context.Background(), id, qual, audioOnly); err != nil {
+	if err := h.service.Download(c.Request().Context(), id, qual, audioOnly); err != nil {
 		c.Logger().Errorf("Download err: %s", err.Error())
 
-		return err
+		return c.Render(http.StatusOK, "error", map[string]string{"error": "download failed, please try again"})
 	}
 
 	return c.Render(http.StatusOK, "status", map[string]any{"ID": id})
@@ -88,7 +85,7 @@ func (h *Handler) Download(c echo.Context) error {
 func (h *Handler) DownloadInfo(c echo.Context) error {
 	videoID := c.QueryParam("id")
 
-	qualities, err := h.service.DownloadInfo(context.Background(), videoID)
+	qualities, err := h.service.DownloadInfo(c.Request().Context(), videoID)
 	if err != nil {
 		return c.String(http.StatusBadRequest, err.Error())
 	}

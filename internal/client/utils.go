@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"fmt"
 	"io"
 	"log/slog"
 	"os"
@@ -17,20 +16,20 @@ import (
 	"github.com/kkdai/youtube/v2"
 )
 
-func getThumbnail(tbs youtube.Thumbnails) *models.Image {
+var nameCleanRegex = regexp.MustCompile(`[^a-zA-Z0-9 ]`)
+
+func getThumbnail(tbs youtube.Thumbnails) models.Image {
 	if len(tbs) == 0 {
-		return nil
+		return models.Image{}
 	}
 
 	tb := tbs[len(tbs)/2]
 
-	img := models.Image{
+	return models.Image{
 		URL:    tb.URL,
 		Height: tb.Height,
 		Width:  tb.Width,
 	}
-
-	return &img
 }
 
 func formatName(title string) string {
@@ -38,86 +37,93 @@ func formatName(title string) string {
 		return title
 	}
 
-	re := regexp.MustCompile(`[^a-zA-Z0-9 ]`)
-	name := re.ReplaceAllString(title, "")
+	name := nameCleanRegex.ReplaceAllString(title, "")
 
 	return strings.TrimSpace(name)
 }
 
+func truncate(s string, maxLen int) string {
+	if len(s) <= maxLen {
+		return s
+	}
+
+	return s[:maxLen]
+}
+
 func stream2File(stream io.ReadCloser, fileName string) error {
-	tempF, err := os.CreateTemp(os.TempDir(), fileName)
+	destPath := filepath.Clean(filepath.Join(models.DirPath, fileName))
+
+	tempF, err := os.CreateTemp(models.DirPath, "*.tmp")
 	if err != nil {
 		return err
 	}
 
-	defer func() { _ = tempF.Close() }()
+	tempPath := tempF.Name()
+
+	defer func() {
+		if err != nil {
+			_ = os.Remove(tempPath)
+		}
+	}()
 
 	if _, err = io.Copy(tempF, stream); err != nil {
+		_ = tempF.Close()
+
 		return err
 	}
 
-	if err := tempF.Sync(); err != nil {
-		return nil
-	}
+	if err = tempF.Sync(); err != nil {
+		_ = tempF.Close()
 
-	defer func() { _ = os.RemoveAll(tempF.Name()) }()
-
-	file, err := os.Create(filepath.Clean(models.DirPath + "/" + fileName))
-	if err != nil {
 		return err
 	}
 
-	data, err := os.ReadFile(tempF.Name())
-	if err != nil {
+	if err = tempF.Close(); err != nil {
 		return err
 	}
 
-	if _, err := file.Write(data); err != nil {
-		return err
-	}
-
-	if err := file.Sync(); err != nil {
-		return err
-	}
-
-	return file.Close()
+	return os.Rename(tempPath, destPath)
 }
 
-func addMetaData(c context.Context, vid *youtube.Video, fileName string) error {
-	fileName = filepath.Clean(models.DirPath + "/" + fileName)
+func addMetaData(ctx context.Context, vid *youtube.Video, fileName string) error {
+	inputPath := filepath.Clean(filepath.Join(models.DirPath, fileName))
 
-	fmt.Printf("\nFileName: %s", fileName)
-
-	_, err := os.Stat(fileName)
-	if err != nil {
+	if _, err := os.Stat(inputPath); err != nil {
 		return err
 	}
 
-	cmd := prepareMetadataCommand(vid, fileName)
+	outputPath := inputPath + ".tmp"
+	args := prepareMetadataArgs(vid, inputPath, outputPath)
 
-	fmt.Println("running cmd:\n", cmd)
-
-	_, err = exec.Command(cmd).CombinedOutput()
+	out, err := exec.CommandContext(ctx, "ffmpeg", args...).CombinedOutput()
 	if err != nil {
-		slog.LogAttrs(c, slog.LevelError, err.Error())
+		slog.LogAttrs(ctx, slog.LevelError, "ffmpeg metadata failed",
+			slog.String("output", string(out)),
+			slog.String("error", err.Error()))
+
+		_ = os.Remove(outputPath)
+
 		return err
 	}
 
-	return nil
+	return os.Rename(outputPath, inputPath)
 }
 
-func prepareMetadataCommand(vid *youtube.Video, fileName string) string {
-	cmd := fmt.Sprintf("ffmpeg -i %s -map 0 -c:a copy ", fileName)
+func prepareMetadataArgs(vid *youtube.Video, inputFile, outputFile string) []string {
+	args := []string{"-y", "-i", inputFile, "-map", "0", "-c:a", "copy"}
 
-	data := map[string]string{
-		"title":       vid.Title[:len(vid.Title)%100],
-		"author":      vid.Author[:len(vid.Author)%100],
-		"description": vid.Description[:len(vid.Description)%100],
-		"year":        strconv.Itoa(vid.PublishDate.Year())}
-
-	for i := range data {
-		cmd += fmt.Sprintf("-metadata %s=\"%s\" ", i, data[i])
+	meta := map[string]string{
+		"title":       truncate(vid.Title, 100),
+		"author":      truncate(vid.Author, 100),
+		"description": truncate(vid.Description, 100),
+		"year":        strconv.Itoa(vid.PublishDate.Year()),
 	}
 
-	return cmd
+	for k, v := range meta {
+		args = append(args, "-metadata", k+"="+v)
+	}
+
+	args = append(args, outputFile)
+
+	return args
 }

@@ -13,7 +13,7 @@ import (
 	v2 "github.com/kkdai/youtube/v2"
 )
 
-// MockYtdlr is a mock of Ytdlr interface.
+// MockYtdlr is a mock of ytdlr interface.
 type MockYtdlr struct {
 	ctrl     *gomock.Controller
 	recorder *MockYtdlrMockRecorder
@@ -50,19 +50,19 @@ func (mr *MockYtdlrMockRecorder) DownloadComposite(ctx, outputFile, v, quality, 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DownloadComposite", reflect.TypeOf((*MockYtdlr)(nil).DownloadComposite), ctx, outputFile, v, quality, mimetype, language)
 }
 
-// GetPlaylist mocks base method.
-func (m *MockYtdlr) GetPlaylist(url string) (*v2.Playlist, error) {
+// GetPlaylistContext mocks base method.
+func (m *MockYtdlr) GetPlaylistContext(ctx context.Context, url string) (*v2.Playlist, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetPlaylist", url)
+	ret := m.ctrl.Call(m, "GetPlaylistContext", ctx, url)
 	ret0, _ := ret[0].(*v2.Playlist)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetPlaylist indicates an expected call of GetPlaylist.
-func (mr *MockYtdlrMockRecorder) GetPlaylist(url interface{}) *gomock.Call {
+// GetPlaylistContext indicates an expected call of GetPlaylistContext.
+func (mr *MockYtdlrMockRecorder) GetPlaylistContext(ctx, url interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPlaylist", reflect.TypeOf((*MockYtdlr)(nil).GetPlaylist), url)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetPlaylistContext", reflect.TypeOf((*MockYtdlr)(nil).GetPlaylistContext), ctx, url)
 }
 
 // GetStreamContext mocks base method.
@@ -79,21 +79,6 @@ func (m *MockYtdlr) GetStreamContext(ctx context.Context, video *v2.Video, forma
 func (mr *MockYtdlrMockRecorder) GetStreamContext(ctx, video, format interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetStreamContext", reflect.TypeOf((*MockYtdlr)(nil).GetStreamContext), ctx, video, format)
-}
-
-// GetVideo mocks base method.
-func (m *MockYtdlr) GetVideo(url string) (*v2.Video, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetVideo", url)
-	ret0, _ := ret[0].(*v2.Video)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetVideo indicates an expected call of GetVideo.
-func (mr *MockYtdlrMockRecorder) GetVideo(url interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetVideo", reflect.TypeOf((*MockYtdlr)(nil).GetVideo), url)
 }
 
 // GetVideoContext mocks base method.
