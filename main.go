@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"errors"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -14,11 +14,9 @@ import (
 	"ytdl_http/internal/models"
 	"ytdl_http/internal/service"
 
-	"golang.org/x/time/rate"
-
-	"github.com/labstack/echo-contrib/echoprometheus"
-	"github.com/labstack/echo/v4"
-	"github.com/labstack/echo/v4/middleware"
+	echoprometheus "github.com/labstack/echo-prometheus"
+	"github.com/labstack/echo/v5"
+	"github.com/labstack/echo/v5/middleware"
 )
 
 func main() {
@@ -28,8 +26,8 @@ func main() {
 	e.Renderer = t
 
 	if _, err := os.Stat(models.DirPath); os.IsNotExist(err) {
-		if err := os.Mkdir(models.DirPath, 0750); err != nil {
-			e.Logger.Errorf("error while creating the directory: %s", err.Error())
+		if err := os.Mkdir(models.DirPath, 0o750); err != nil {
+			e.Logger.Error("directory creation error", slog.String("error", err.Error()), slog.String("dir-path", models.DirPath))
 
 			return
 		}
@@ -48,26 +46,22 @@ func main() {
 
 	e.POST("/getInfo", h.GetInfo)
 	e.POST("/download", h.Download)
+
 	e.GET("/resource/*", echo.WrapHandler(http.StripPrefix("/resource/",
 		http.FileServer(http.Dir(models.DirPath)))))
 	e.GET("/assets/*", echo.WrapHandler(http.StripPrefix("/assets/",
 		http.FileServer(http.Dir("assets")))))
 
-	go func() {
-		if err := e.Start(":9001"); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			e.Logger.Fatal(err)
-		}
-	}()
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+	defer stop()
 
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
+	sc := echo.StartConfig{
+		Address:         ":9001",
+		GracefulTimeout: 5 * time.Second,
+	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-	defer cancel()
-
-	if err := e.Shutdown(ctx); err != nil {
-		e.Logger.Fatal(err)
+	if err := sc.Start(ctx, e); err != nil {
+		e.Logger.Error("failed to start server", slog.String("error", err.Error()))
 	}
 }
 
@@ -79,15 +73,7 @@ func setupDeps() *handler.Handler {
 
 func addMiddlewares(app *echo.Echo) {
 	app.Pre(middleware.RemoveTrailingSlash())
-	app.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{}))
 	app.Use(echoprometheus.NewMiddleware(models.AppName))
 	app.Use(middleware.Recover())
-	app.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(
-		rate.Limit(160),
-	)))
-	app.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
-		Skipper:      middleware.DefaultSkipper,
-		ErrorMessage: "Timed-out due to no activity for 3 mins",
-		Timeout:      180 * time.Second,
-	}))
+	app.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(150.0)))
 }

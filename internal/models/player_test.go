@@ -8,9 +8,9 @@ import (
 
 func TestPlayer_FillByName(t *testing.T) {
 	tests := []struct {
-		name   string
-		input  string
-		want   Player
+		name  string
+		input string
+		want  Player
 	}{
 		{name: "empty name", input: "", want: Player{}},
 		{name: "short name", input: "ab", want: Player{}},
